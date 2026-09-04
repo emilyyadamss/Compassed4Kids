@@ -12,6 +12,7 @@ const MODES = {
    a password (and, optionally, a PIN). */
 export default function AuthScreen({ initialMode = 'signin', onBack }) {
   const [mode, setMode] = useState(initialMode)
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
@@ -19,6 +20,14 @@ export default function AuthScreen({ initialMode = 'signin', onBack }) {
   const [message, setMessage] = useState(null)
 
   const copy = MODES[mode]
+
+  /* Kept on the auth user rather than in the family's own rows: it is who
+     holds the account, not something the kid screens ever read. Left off
+     entirely when blank, so an empty box never writes an empty name. */
+  const parentMeta = () => {
+    const clean = name.trim()
+    return clean ? { parent_name: clean } : {}
+  }
 
   async function submit(e) {
     e.preventDefault()
@@ -28,7 +37,7 @@ export default function AuthScreen({ initialMode = 'signin', onBack }) {
     setMessage(null)
     try {
       if (mode === 'signup') {
-        const { error: err } = await supabase.auth.signUp({ email, password })
+        const { error: err } = await supabase.auth.signUp({ email, password, options: { data: parentMeta() } })
         if (err) throw err
         setMessage('Account created. Check your email to confirm it, then sign in.')
         setMode('signin')
@@ -51,7 +60,10 @@ export default function AuthScreen({ initialMode = 'signin', onBack }) {
     try {
       const { error: err } = await supabase.auth.signInWithOtp({
         email,
-        options: { emailRedirectTo: window.location.origin },
+        options: {
+          emailRedirectTo: window.location.origin,
+          ...(mode === 'signup' ? { data: parentMeta() } : null),
+        },
       })
       if (err) throw err
       setMessage('Check your email for a sign-in link.')
@@ -75,6 +87,21 @@ export default function AuthScreen({ initialMode = 'signin', onBack }) {
         <div className="card-head"><div className="card-title">{copy.title}</div></div>
 
         <form onSubmit={submit} className="stack">
+          {mode === 'signup' && (
+            <div className="field">
+              <label htmlFor="auth-name">Your name <span className="optional">(optional)</span></label>
+              <input
+                id="auth-name"
+                className="input"
+                type="text"
+                autoComplete="name"
+                placeholder="What your kids call you"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+          )}
+
           <div className="field">
             <label htmlFor="auth-email">Parent email</label>
             <input

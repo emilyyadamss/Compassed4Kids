@@ -628,6 +628,15 @@ export default function App() {
               setSettings={setSettings}
               state={state}
               email={session.user.email}
+              parentName={session.user.user_metadata?.parent_name || ''}
+              onSaveParentName={async (next) => {
+                // Lives on the auth user, so it survives a wiped device the
+                // way the email does — nothing in the family's own rows.
+                const { data, error } = await supabase.auth.updateUser({ data: { parent_name: next } })
+                if (error) { toast(error.message || 'Could not save your name'); return }
+                if (data?.user) setSession((s) => (s ? { ...s, user: data.user } : s))
+                toast(next ? 'Name saved' : 'Name removed')
+              }}
               notifyState={notifyState}
               onEnableNotifications={enableNotifications}
               toast={toast}

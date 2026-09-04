@@ -10,12 +10,31 @@ const THEMES = [
 const CUTOFFS = [15, 16, 17, 18, 19, 20]
 
 export default function SettingsView({
-  settings, setSettings, state, email, notifyState, onEnableNotifications,
+  settings, setSettings, state, email, parentName, onSaveParentName,
+  notifyState, onEnableNotifications,
   onSignOut, onImport, onLoadSample, onClearAll, toast,
 }) {
   const fileInput = useRef(null)
   const [pin, setPin] = useState('')
+  const [name, setName] = useState(parentName || '')
+  const [savingName, setSavingName] = useState(false)
   const [confirmClear, setConfirmClear] = useState(false)
+
+  /* Blank is a real answer here: clearing the box removes the name rather
+     than being ignored, which is why "unchanged" is what disables Save. */
+  const nameDirty = name.trim() !== (parentName || '')
+
+  async function saveName() {
+    if (!nameDirty || savingName) return
+    const clean = name.trim()
+    setSavingName(true)
+    try {
+      await onSaveParentName(clean)
+      setName(clean)
+    } finally {
+      setSavingName(false)
+    }
+  }
 
   const savePin = () => {
     const clean = pin.replace(/\D/g, '').slice(0, 4)
@@ -233,6 +252,26 @@ export default function SettingsView({
             <div className="card-sub">{email}</div>
           </div>
         </div>
+
+        <div className="field" style={{ marginBottom: 14 }}>
+          <label htmlFor="settings-parent-name">Your name</label>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <input
+              id="settings-parent-name"
+              className="input"
+              style={{ flex: '1 1 180px' }}
+              type="text"
+              autoComplete="name"
+              placeholder="What your kids call you"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <button className="btn" onClick={saveName} disabled={!nameDirty || savingName}>
+              {savingName ? 'Saving…' : 'Save'}
+            </button>
+          </div>
+        </div>
+
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <button className="btn" onClick={onSignOut}>Sign out</button>
           <button
