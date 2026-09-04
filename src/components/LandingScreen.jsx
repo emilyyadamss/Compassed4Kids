@@ -23,7 +23,7 @@ export default function LandingScreen({ onSignUp, onSignIn }) {
   return (
     <div className="landing">
       <div className="landing-inner">
-        <Brand className="brand" size={36} />
+        <Brand className="brand" size={28} />
         <h1>The homework got done. Now you know.</h1>
         <p className="lede">
           Your kid checks off their afternoon on the family tablet. You see it on your phone,

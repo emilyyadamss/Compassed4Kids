@@ -66,15 +66,15 @@ export default function AuthScreen({ initialMode = 'signin', onBack }) {
     <div className="auth-screen">
       <div className="card auth-card">
         {onBack && (
-          <button className="btn btn-ghost btn-sm" style={{ marginBottom: 12 }} onClick={onBack}>
+          <button className="btn btn-ghost btn-sm auth-back" onClick={onBack}>
             ← Back
           </button>
         )}
-        <Brand />
+        <Brand size={26} />
 
         <div className="card-head"><div className="card-title">{copy.title}</div></div>
 
-        <form onSubmit={submit} className="stack" style={{ gap: 14 }}>
+        <form onSubmit={submit} className="stack">
           <div className="field">
             <label htmlFor="auth-email">Parent email</label>
             <input
@@ -111,8 +111,7 @@ export default function AuthScreen({ initialMode = 'signin', onBack }) {
         </form>
 
         <button
-          className="btn btn-ghost btn-sm"
-          style={{ marginTop: 10, width: '100%' }}
+          className="btn btn-sm auth-alt"
           disabled={busy || !email}
           onClick={sendMagicLink}
         >
@@ -120,8 +119,7 @@ export default function AuthScreen({ initialMode = 'signin', onBack }) {
         </button>
 
         <button
-          className="btn btn-ghost btn-sm"
-          style={{ marginTop: 16, width: '100%' }}
+          className="btn btn-ghost btn-sm auth-switch"
           onClick={() => { setMode(copy.switchTo); setError(null); setMessage(null) }}
         >
           {copy.switchLabel}

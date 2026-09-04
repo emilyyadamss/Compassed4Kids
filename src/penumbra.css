@@ -1,12 +1,13 @@
 /* ============================================================
-   Penumbra, applied to the parent shell
+   Penumbra, applied to the grown-up surfaces
 
    DESIGN.md describes a quiet editorial dark system: one onyx canvas, three
    surface tiers six percent apart, hairline borders at 1px and never more, a
    single warm-white accent, and Instrument Serif sitting above Inter. This
-   file puts that system on the grown-up side of the app only — everything
-   under `.app`. Kid mode, the landing page and the auth screens keep the
-   playful Compassed palette, because Penumbra's restraint is not aimed at an
+   file puts that system on every grown-up surface: the shell under `.app`,
+   the landing page a parent reads before signing up, and the sign-in /
+   sign-up screen between them. Kid mode is the one thing left on the playful
+   Compassed palette, because Penumbra's restraint is not aimed at an
    eight-year-old.
 
    Two deliberate departures from the spec, both asked for:
@@ -27,7 +28,9 @@
    specifies differently are restated.
    ============================================================ */
 
-.app {
+.app,
+.auth-screen,
+.landing {
   /* ---- surfaces: the dark tiers inverted onto warm paper ---- */
   --page:           #faf9f7;
   --surface-1:      #ffffff;
@@ -86,7 +89,9 @@
    preference and once for an explicit choice, so the in-app toggle wins in
    both directions — the same pattern styles.css already uses. */
 @media (prefers-color-scheme: dark) {
-  :root:where(:not([data-theme="light"])) .app {
+  :root:where(:not([data-theme="light"])) .app,
+  :root:where(:not([data-theme="light"])) .auth-screen,
+  :root:where(:not([data-theme="light"])) .landing {
     --page:           #08080a;
     --surface-1:      #101013;
     --surface-2:      #1b1b21;
@@ -118,7 +123,9 @@
   }
 }
 
-:root[data-theme="dark"] .app {
+:root[data-theme="dark"] .app,
+:root[data-theme="dark"] .auth-screen,
+:root[data-theme="dark"] .landing {
   --page:           #08080a;
   --surface-1:      #101013;
   --surface-2:      #1b1b21;
@@ -149,13 +156,13 @@
   --inset-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-/* The body keeps the Compassed page color for the kid and landing shells, so
-   the parent shell restates its own — otherwise a rubber-band overscroll on
-   macOS flashes lavender behind the onyx. */
-:root:has(.app) body { background: #faf9f7; }
-:root[data-theme="dark"]:has(.app) body { background: #08080a; }
+/* The body keeps the Compassed page color for kid mode, so the Penumbra
+   shells restate their own — otherwise a rubber-band overscroll on macOS
+   flashes lavender behind the onyx. */
+:root:has(.app, .auth-screen, .landing) body { background: #faf9f7; }
+:root[data-theme="dark"]:has(.app, .auth-screen, .landing) body { background: #08080a; }
 @media (prefers-color-scheme: dark) {
-  :root:where(:not([data-theme="light"])):has(.app) body { background: #08080a; }
+  :root:where(:not([data-theme="light"])):has(.app, .auth-screen, .landing) body { background: #08080a; }
 }
 
 /* ============================================================ type */
@@ -170,7 +177,9 @@
   font-weight: 400;
 }
 
-.app { font-size: 15px; line-height: 1.55; }
+.app,
+.auth-screen,
+.landing { font-size: 15px; line-height: 1.55; }
 
 /* eyebrow: uppercase Inter at 0.16em, the one label style above headlines
    and atop cards */
@@ -179,7 +188,8 @@
 .app .stat .k,
 .app .feed-day,
 .app .field > label,
-.app .label {
+.app .label,
+.auth-screen .field > label {
   font-family: var(--font);
   font-size: 11px;
   font-weight: 500;
@@ -189,7 +199,8 @@
   color: var(--text-muted);
 }
 .app .eyebrow { margin-bottom: 10px; }
-.app .field > label, .app .label { color: var(--text-secondary); }
+.app .field > label, .app .label,
+.auth-screen .field > label { color: var(--text-secondary); }
 
 .app .page-head { margin-bottom: 40px; align-items: flex-end; }
 .app .page-title { font-size: 40px; line-height: 1.1; letter-spacing: -0.01em; }
@@ -197,14 +208,14 @@
 
 .app .card-title { font-size: 20px; letter-spacing: -0.01em; }
 .app .card-sub { font-size: 13px; line-height: 1.5; color: var(--text-secondary); margin-top: 3px; }
-.app .hint { font-size: 13px; color: var(--text-muted); }
+:is(.app, .auth-screen, .landing) .hint { font-size: 13px; color: var(--text-muted); }
 
 /* 1.5px outline icons in currentColor, per the spec's Lucide rule. The two
    check glyphs keep a heavier stroke: a tick is a mark, not an outline. */
-.app svg { stroke-width: 1.5; }
+:is(.app, .auth-screen, .landing) svg { stroke-width: 1.5; }
 .app .act-check svg, .app .toggle svg { stroke-width: 2.25; }
 
-.app :focus-visible {
+:is(.app, .auth-screen, .landing) :focus-visible {
   outline: 1px solid var(--accent-ring);
   outline-offset: 2px;
   border-radius: 2px;
@@ -219,14 +230,14 @@
   gap: 2px;
 }
 
-.app .brand {
+:is(.app, .auth-screen, .landing) .brand {
   font-family: var(--font-display);
   font-weight: 400;
   font-size: 21px;
   letter-spacing: -0.01em;
   padding: 0 8px 32px;
 }
-:root .app .brand-mark {
+:root :is(.app, .auth-screen, .landing) .brand-mark {
   width: 28px; height: 28px;
   background: transparent;
   border: 0;
@@ -262,22 +273,22 @@
 
 .app .main { padding: 40px 40px 96px; max-width: 1120px; }
 
-.app .stack { gap: 16px; }
+:is(.app, .auth-screen, .landing) .stack { gap: 16px; }
 
 /* ============================================================ primitives */
 
-.app .card {
+:is(.app, .auth-screen, .landing) .card {
   background: var(--surface-1);
   border: var(--hairline);
   border-radius: var(--radius-lg);
   padding: 24px;
   box-shadow: none;
 }
-.app .card-head { margin-bottom: 16px; }
+:is(.app, .auth-screen, .landing) .card-head { margin-bottom: 16px; }
 
 /* button: pill, 40px, one accent. Primary carries the warm-white (or ink)
    fill and the faint top-edge lip; hover adds the accent ring at 8%. */
-.app .btn {
+:is(.app, .auth-screen, .landing) .btn {
   height: 40px;
   padding: 0 18px;
   gap: 8px;
@@ -290,32 +301,32 @@
   letter-spacing: 0.02em;
   box-shadow: none;
 }
-.app .btn:hover { background: var(--surface-1); border-color: var(--border-strong); }
-.app .btn:active { transform: none; }
-.app .btn-primary {
+:is(.app, .auth-screen, .landing) .btn:hover { background: var(--surface-1); border-color: var(--border-strong); }
+:is(.app, .auth-screen, .landing) .btn:active { transform: none; }
+:is(.app, .auth-screen, .landing) .btn-primary {
   background: var(--cta-bg);
   color: var(--cta-text);
   border-color: rgba(255, 255, 255, 0.12);
   box-shadow: var(--inset-highlight);
 }
-.app .btn-primary:hover {
+:is(.app, .auth-screen, .landing) .btn-primary:hover {
   background: var(--cta-hover);
   border-color: rgba(255, 255, 255, 0.12);
   box-shadow: var(--inset-highlight), var(--glow);
 }
-.app .btn-ghost {
+:is(.app, .auth-screen, .landing) .btn-ghost {
   border-color: transparent;
   background: transparent;
   color: var(--text-secondary);
   height: 36px;
   padding: 0 14px;
 }
-.app .btn-ghost:hover { background: var(--surface-2); color: var(--text-primary); }
-.app .btn-sm { height: 32px; padding: 0 14px; font-size: 11px; }
-.app .btn-icon { width: 40px; padding: 0; }
-.app .btn-sm.btn-icon { width: 32px; }
-.app .btn-danger { color: var(--error-text); }
-.app .btn-danger:hover {
+:is(.app, .auth-screen, .landing) .btn-ghost:hover { background: var(--surface-2); color: var(--text-primary); }
+:is(.app, .auth-screen, .landing) .btn-sm { height: 32px; padding: 0 14px; font-size: 11px; }
+:is(.app, .auth-screen, .landing) .btn-icon { width: 40px; padding: 0; }
+:is(.app, .auth-screen, .landing) .btn-sm.btn-icon { width: 32px; }
+:is(.app, .auth-screen, .landing) .btn-danger { color: var(--error-text); }
+:is(.app, .auth-screen, .landing) .btn-danger:hover {
   background: transparent;
   border-color: var(--error);
   color: var(--error-text);
@@ -339,7 +350,9 @@
 .app .seg button[aria-pressed="true"] { background: var(--cta-bg); color: var(--cta-text); }
 
 /* input: 40px, 6px radius, slate fill, hairline that the focus ring replaces */
-.app .input, .app select.input, .app textarea.input {
+:is(.app, .auth-screen, .landing) .input,
+:is(.app, .auth-screen, .landing) select.input,
+:is(.app, .auth-screen, .landing) textarea.input {
   height: 40px;
   padding: 0 14px;
   border: var(--hairline);
@@ -348,7 +361,9 @@
   font-size: 15px;
 }
 .app textarea.input { height: auto; padding: 11px 14px; min-height: 72px; line-height: 1.55; }
-.app .input:focus, .app textarea.input:focus, .app select.input:focus {
+:is(.app, .auth-screen, .landing) .input:focus,
+:is(.app, .auth-screen, .landing) textarea.input:focus,
+:is(.app, .auth-screen, .landing) select.input:focus {
   border-color: var(--accent-ring);
   box-shadow: var(--glow);
 }
@@ -695,6 +710,149 @@
   box-shadow: var(--shadow-lg);
 }
 
+/* ============================================================ auth
+
+   Sign in and sign up. One account per family and a grown-up holds it, so
+   this is a parent surface and it takes the parent system — even though it
+   renders outside `.app`, on top of the landing page's playful shell. The
+   primitives above already reach it; what follows is only the handful of
+   shapes the screen sets differently from a card inside the dashboard.
+   ============================================================ */
+
+.auth-screen {
+  background: var(--page);
+  color: var(--text-primary);
+  padding: 48px 24px;
+}
+
+/* The only card on the screen, so it is the signature surface rather than a
+   plain one: 14px radius, 32px of padding, and the faint top-edge lip. */
+.auth-screen .auth-card {
+  max-width: 420px;
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  box-shadow: var(--inset-highlight);
+}
+
+/* The back link is tertiary, so it hangs into the card's padding and leaves
+   the brand holding the top of the vertical rhythm. */
+.auth-screen .auth-back { margin: 0 0 12px -14px; }
+
+.auth-screen .brand {
+  padding: 0;
+  margin-bottom: 28px;
+  font-size: 18px;
+}
+
+/* Here the card title is the screen's headline rather than a card label, so
+   it goes up to headline-md from the 20px the dashboard cards use. */
+.auth-screen .card-head { margin-bottom: 22px; }
+.auth-screen .card-title {
+  font-size: 28px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+/* One accent, three tiers. Submit is the single primary action; the magic
+   link under it is a hairline secondary, because signing in another way is a
+   real alternative and not an aside; the mode switch stays ghost. Two
+   identical ghost buttons stacked read as one indecisive pair. */
+.auth-screen .auth-alt { width: 100%; margin-top: 24px; }
+.auth-screen .auth-switch { width: 100%; margin-top: 8px; }
+
+/* Errors and confirmations sit on the inset ground instead of loose under
+   the field, so a message arriving reads as part of the form rather than as
+   an interruption. An error tints its own text and nothing else: on a
+   monochrome screen a red panel would be the loudest thing in the app. */
+.auth-screen .hint {
+  color: var(--text-secondary);
+  background: var(--surface-sunken);
+  border: var(--hairline);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  line-height: 1.5;
+}
+
+/* ============================================================ landing
+
+   The signed-out front door, and the first thing a parent ever sees. It is a
+   grown-up's screen — three paragraphs and a decision — so it takes the
+   parent system rather than the kid palette, and the hand-off into the auth
+   card behind its two buttons is now seamless instead of a hard switch.
+   ============================================================ */
+
+/* Penumbra has no decorative gradient, so the lavender wash behind the hero
+   goes and the canvas carries the page flat. Hierarchy here is built from
+   type and negative space, which is the whole point of the system. */
+.landing {
+  background: var(--page);
+  color: var(--text-primary);
+  padding: 96px 24px 120px;
+}
+
+.landing .brand {
+  padding: 0;
+  justify-content: center;
+  margin-bottom: 56px;
+  font-size: 18px;
+}
+
+/* display-lg, clamped down so the serif still has room to breathe on a
+   phone rather than breaking into four lines. */
+.landing h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(40px, 6.5vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.landing .lede {
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  max-width: 52ch;
+  margin: 20px auto 0;
+}
+
+/* Create an account is the one primary action on the page; signing in is the
+   hairline secondary. Both come back to the system's 40px control height —
+   an oversized hero button is the kind of emphasis Penumbra spends on type. */
+.landing-actions { gap: 12px; margin-top: 32px; }
+.landing-actions .btn { height: 40px; padding: 0 18px; font-size: 12px; }
+
+/* a full section gap below the hero, and the 24px gutter between cards */
+.landing-grid { gap: 24px; margin-top: 96px; }
+
+.landing-feature {
+  background: var(--surface-1);
+  border: var(--hairline);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: none;
+}
+
+/* The accent-tinted icon chip goes. Penumbra has no chromatic accent, so the
+   glyph stands on its own in currentColor at the spec's 1.5px stroke instead
+   of sitting on a lavender tile. */
+.landing-feature .ico {
+  width: 20px; height: 20px;
+  background: none;
+  border-radius: 0;
+  color: var(--text-primary);
+  margin-bottom: 18px;
+}
+
+.landing-feature h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+.landing-feature p { font-size: 15px; line-height: 1.55; color: var(--text-secondary); }
+
 /* ============================================================ mobile */
 
 @media (max-width: 900px) {
@@ -728,4 +886,12 @@
   .app .mobile-fab-item[aria-current="true"] { background: var(--cta-bg); border-color: transparent; color: var(--cta-text); }
   .app .mobile-fab-item em { font-size: 11px; letter-spacing: 0; }
   .app .mobile-fab-backdrop { background: rgba(8, 8, 10, 0.4); }
+
+  .auth-screen { padding: 24px; }
+  .auth-screen .auth-card { padding: 24px; }
+  .auth-screen .card-title { font-size: 24px; }
+
+  .landing { padding: 56px 24px 80px; }
+  .landing .brand { margin-bottom: 40px; }
+  .landing-grid { margin-top: 56px; }
 }
