@@ -3,8 +3,8 @@ import { ActivityIcon } from '../lib/icons.jsx'
 import { measureFor, measureWord, daysLabel, quizScore } from '../lib/model.js'
 import { formatTime } from '../lib/date.js'
 
-/* One activity on one day, on the grown-up side. The checkbox works here too —
-   a parent marking something off on a kid's behalf is a normal Tuesday — but
+/* One activity on one day, on the grown-up side. The checkbox works here too,
+   a parent marking something off on a kid's behalf is a normal Tuesday, but
    the row leads with what happened rather than with the tap target. */
 export default function ActivityRow({ activity, status, onToggle, onEdit, showDays = false }) {
   const measure = measureFor(activity)
@@ -20,7 +20,7 @@ export default function ActivityRow({ activity, status, onToggle, onEdit, showDa
   if (!scheduled && !done) detail.push('not scheduled today')
 
   /* The score if it has been earned today, otherwise just the fact that
-     questions are waiting — so a parent glancing at the list can see which
+     questions are waiting, so a parent glancing at the list can see which
      activities are quizzed without opening the editor. */
   const scored = done ? quizScore(entry) : null
   if (scored) detail.push(`quiz ${scored.score}/${scored.total}`)

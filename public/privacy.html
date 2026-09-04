@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <title>Privacy policy · Compassed 4 Kids</title>
+    <meta name="description" content="What Compassed 4 Kids collects, where it is kept, and who can see it. Your family's data is never sold." />
+
+    <!-- A plain static page on purpose: a parent deciding whether to sign up
+         should be able to read this without an account, and without the app
+         bundle having to boot first.
+
+         The tokens below are Penumbra's, copied from penumbra.css, because
+         this page is read from the landing footer and belongs to the same
+         grown-up surface. Copied rather than imported: the stylesheet is
+         scoped to `.app` / `.landing` inside the React tree, and there is no
+         React tree here. Nothing but the theme toggle is lost by that — a
+         static page cannot read a setting that lives in the database, so the
+         theme follows the device instead. -->
+    <style>
+      :root {
+        color-scheme: light;
+
+        --page:           #faf9f7;
+        --surface-1:      #ffffff;
+        --surface-2:      #f2f1ee;
+        --text-primary:   #17171a;
+        --text-secondary: #5c6068;
+        --text-muted:     #7c808a;
+        --border:         #e4e3dd;
+        --border-strong:  #cbcac2;
+        --accent:         #1b1b21;
+
+        --radius:    6px;
+        --radius-lg: 10px;
+
+        --font:         'Inter', 'Helvetica Neue', Arial, sans-serif;
+        --font-display: 'Instrument Serif', 'Cormorant Garamond', Georgia, serif;
+
+        --hairline: 1px solid var(--border);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          color-scheme: dark;
+          --page:           #08080a;
+          --surface-1:      #101013;
+          --surface-2:      #1b1b21;
+          --text-primary:   #f4f4f5;
+          --text-secondary: #9ba0ab;
+          --text-muted:     #5c6068;
+          --border:         #23232a;
+          --border-strong:  #2e2e36;
+          --accent:         #e8e5dc;
+        }
+      }
+
+      *, *::before, *::after { box-sizing: border-box; }
+      * { margin: 0; }
+
+      body {
+        font-family: var(--font);
+        font-size: 15px;
+        line-height: 1.55;
+        background: var(--page);
+        color: var(--text-primary);
+        -webkit-font-smoothing: antialiased;
+        padding: 64px 24px 120px;
+      }
+
+      .wrap { max-width: 720px; margin: 0 auto; }
+
+      /* Instrument Serif ships in one weight; anything asking for bold gets a
+         synthesised one, which is the whole point of the face lost. */
+      h1, h2, h3 { font-family: var(--font-display); font-weight: 400; }
+
+      .top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 72px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--font-display);
+        font-size: 18px;
+        letter-spacing: -0.01em;
+        color: inherit;
+        text-decoration: none;
+      }
+      .brand img { width: 28px; height: 28px; flex: none; }
+      .back {
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        padding: 0 18px;
+        border: var(--hairline);
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-primary);
+        text-decoration: none;
+        white-space: nowrap;
+      }
+      .back:hover { background: var(--surface-2); border-color: var(--border-strong); }
+
+      h1 {
+        font-size: clamp(40px, 6.5vw, 56px);
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+      }
+
+      /* the one label style: uppercase Inter at 0.16em */
+      .eyebrow {
+        font-size: 11px;
+        font-weight: 500;
+        line-height: 1.2;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 14px;
+      }
+      .stamp {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-top: 20px;
+      }
+      .lede {
+        font-size: 17px;
+        color: var(--text-secondary);
+        max-width: 52ch;
+        margin-top: 24px;
+      }
+
+      h2 {
+        font-size: 28px;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+        margin-top: 64px;
+        margin-bottom: 14px;
+      }
+      h3 {
+        font-size: 20px;
+        line-height: 1.25;
+        letter-spacing: -0.01em;
+        margin-top: 32px;
+        margin-bottom: 8px;
+      }
+      p { color: var(--text-secondary); margin-bottom: 14px; }
+      p:last-child { margin-bottom: 0; }
+      strong { color: var(--text-primary); font-weight: 500; }
+      a { color: var(--text-primary); text-decoration-color: var(--border-strong); text-underline-offset: 3px; }
+      a:hover { text-decoration-color: currentColor; }
+
+      ul { color: var(--text-secondary); padding-left: 20px; margin-bottom: 14px; }
+      li { margin-bottom: 10px; }
+      li::marker { color: var(--text-muted); }
+
+      /* Penumbra lifts a card with a surface step and a hairline, never a shadow. */
+      .card {
+        background: var(--surface-1);
+        border: var(--hairline);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        margin-top: 48px;
+      }
+      .card h2 { margin-top: 0; margin-bottom: 16px; font-size: 24px; }
+      .card ul { margin-bottom: 0; }
+
+      .table-scroll { overflow-x: auto; margin: 20px 0 14px; }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        min-width: 520px;
+        font-size: 14px;
+      }
+      th, td {
+        text-align: left;
+        padding: 12px 16px;
+        border-bottom: var(--hairline);
+        vertical-align: top;
+      }
+      th {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        background: var(--surface-2);
+        white-space: nowrap;
+      }
+      td { color: var(--text-secondary); }
+      td:first-child { color: var(--text-primary); }
+      tr:last-child td { border-bottom: none; }
+
+      .note {
+        color: var(--text-muted);
+        border-left: var(--hairline);
+        padding-left: 20px;
+        margin: 24px 0;
+      }
+
+      footer {
+        margin-top: 80px;
+        padding-top: 24px;
+        border-top: var(--hairline);
+        display: flex;
+        gap: 16px;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+      footer a { color: var(--text-secondary); text-decoration: none; }
+      footer a:hover { color: var(--text-primary); text-decoration: underline; }
+
+      @media (max-width: 700px) {
+        body { padding: 40px 20px 80px; }
+        .top { margin-bottom: 48px; }
+        h2 { margin-top: 48px; font-size: 26px; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrap">
+      <div class="top">
+        <a class="brand" href="/">
+          <img src="/favicon.svg" alt="" />
+          <span>Compassed 4 Kids</span>
+        </a>
+        <a class="back" href="/">Back to the app</a>
+      </div>
+
+      <div class="eyebrow">Compassed 4 Kids</div>
+      <h1>Privacy policy</h1>
+      <div class="stamp">Last updated 4 September 2026</div>
+
+      <p class="lede">
+        This app holds a record of a child's homework, and that record belongs to the child and to
+        their parent. It is not sold, rented, brokered, or handed to advertisers. This page says what
+        is collected, where it is kept, who can reach it, and how to get rid of it.
+      </p>
+
+      <div class="card">
+        <h2>The short version</h2>
+        <ul>
+          <li><strong>Your data is never sold.</strong> Not to advertisers, not to data brokers, not to schools or tutoring companies. That is not a current policy that could quietly change; it is what this app is.</li>
+          <li><strong>No ads, no trackers, no analytics.</strong> There is no advertising SDK, no tracking pixel, and no third-party analytics anywhere in the app.</li>
+          <li><strong>Only your family can see your family.</strong> Every row is tied to your account and enforced by the database itself, not merely by the screens you are shown.</li>
+          <li><strong>Everything is encrypted</strong> in transit and at rest, in Supabase's managed Postgres.</li>
+          <li><strong>You can export all of it, or delete all of it,</strong> from Settings, at any time, without asking anyone.</li>
+        </ul>
+      </div>
+
+      <h2>What this covers</h2>
+      <p>
+        The Compassed 4 Kids web app, and the small server function behind its quiz feature. It is
+        addressed to the parent who holds the account, because in this app the parent is the account:
+        a child does not sign up, does not have a login, and does not have a password.
+      </p>
+
+      <h2>What is collected</h2>
+
+      <h3>Your account</h3>
+      <p>
+        An email address and a password — or an email address alone, if you use the emailed sign-in
+        link. Sign-in is handled by Supabase Auth. Your password is hashed by Supabase and is never
+        stored, logged, or visible in plain text to anyone, us included.
+      </p>
+
+      <h3>What you set up for your kids</h3>
+      <ul>
+        <li><strong>Each kid:</strong> the name you type, an optional grade, and the avatar and color you pick. A first name is enough. The app never asks for a surname, a birthday, an address, a school, a photograph, or any way of contacting a child, and it is better if you do not type one in.</li>
+        <li><strong>Each activity:</strong> its name, icon, the days it is expected on, how it is counted, any description you write, and any quiz questions you write yourself.</li>
+        <li><strong>Each check-off:</strong> the date, the amount recorded, whatever was typed in the note box about what was done, and the quiz score if that activity was quizzed.</li>
+        <li><strong>Your settings:</strong> theme, notification preference, the hour after which a day counts as behind, whether quizzes are on, and the four-digit parent PIN if you set one.</li>
+      </ul>
+
+      <h3>On your device</h3>
+      <p>
+        Your browser keeps your Supabase sign-in session, so you are not asked to log in on every
+        visit, and one small value recording whether this device was last left in kid mode — which is
+        what lets the kitchen tablet reopen into your child's screen rather than your dashboard. If
+        you switch on desktop notifications, that permission is granted to your browser, by you, and
+        can be taken back there.
+      </p>
+
+      <h2>What is not collected</h2>
+      <ul>
+        <li>No advertising or marketing identifiers, and no profile of your family for anyone to target.</li>
+        <li>No analytics, session recording, heatmaps, or behavioural tracking of any kind.</li>
+        <li>No location, contacts, camera, microphone, or files from your device.</li>
+        <li>No payment details — the app does not take payments.</li>
+        <li>No accounts, logins, or credentials belonging to a child.</li>
+      </ul>
+
+      <h2>Where it is kept, and how it is kept safe</h2>
+      <p>
+        Your family's data lives in a Supabase project: managed Postgres, encrypted at rest, reached
+        only over HTTPS. The app itself is a static site, also served over HTTPS.
+      </p>
+      <p>
+        Separation between families is enforced in the database rather than in the interface. Every
+        table has row-level security switched on, and every policy says the same thing: a row is
+        readable and writable only by the account that owns it. That holds for live updates too, so
+        the check-off that appears on your phone the moment your child taps it can only ever be your
+        own child's. A bug in a screen cannot show you another family's kids, because the database
+        would not hand over their rows to begin with.
+      </p>
+      <p>
+        The parent PIN and kid mode are a lock on the interface, not a second account. They keep a
+        child out of the grown-up dashboard on a shared tablet; they are not a defense against
+        someone holding your email and password, which is the thing genuinely worth protecting. Use
+        a password you use nowhere else.
+      </p>
+
+      <h2>Quizzes, and what reaches Claude</h2>
+      <p>
+        Quizzing is optional. It is off for every activity you have not switched it on for, and a
+        single control in Settings turns the whole feature off.
+      </p>
+      <p>
+        When it is on and your child checks off a quizzed activity, they type a sentence or two about
+        what they actually did. To turn that into questions, the server sends Anthropic's Claude API
+        the activity name, the description you wrote for it, the amount logged, your child's first
+        name and grade as you entered them, and what your child typed. Nothing else travels with it:
+        not your email, not your account, not your other children, not your history.
+      </p>
+      <p>
+        Anthropic does not train its models on data submitted through the API. The answer key is
+        encrypted before the quiz ever reaches the browser, so a child who opens the network tab
+        finds ciphertext rather than answers. The server function keeps nothing — it has no database
+        of its own, and a quiz exists only for the sitting it was written for.
+      </p>
+      <p class="note">
+        If you would rather nothing at all left the app, turn quizzes off. Everything else — the
+        lists, the check-offs, the streaks, the notifications — involves no third party beyond the
+        database holding it.
+      </p>
+
+      <h2>Who else touches it</h2>
+      <p>
+        Only the services that make the app run. Each acts on our instructions; none of them is given
+        your data for its own purposes.
+      </p>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>What it does</th>
+              <th>What it sees</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Supabase</td>
+              <td>Database, sign-in, live updates</td>
+              <td>Your account and your family's data</td>
+            </tr>
+            <tr>
+              <td>Vercel</td>
+              <td>Hosting, and the quiz server function</td>
+              <td>Ordinary request logs; quiz requests in transit</td>
+            </tr>
+            <tr>
+              <td>Anthropic</td>
+              <td>Writes quiz questions, only when quizzing is on</td>
+              <td>Only the activity and note described above</td>
+            </tr>
+            <tr>
+              <td>Google Fonts</td>
+              <td>Serves the typefaces</td>
+              <td>Your IP address, as any web request would</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Beyond these, data is disclosed only where the law genuinely requires it, and you will be
+        told unless we are forbidden to tell you. If the app were ever transferred to someone else,
+        you would hear about it first, and this policy would travel with the data.
+      </p>
+
+      <h2>Your data is not for sale</h2>
+      <p>
+        It is not sold, rented, licensed, or traded, and it is not shared for advertising, marketing,
+        or anyone's idea of personalisation. That includes everything about your children: their
+        names, their schedules, their grades, what they read, how they scored, and how often they
+        finished their day. There is no exception to this and no partner arrangement sheltering
+        behind a word like <em>affiliate</em>.
+      </p>
+
+      <h2>Children's privacy</h2>
+      <p>
+        The account belongs to a parent or guardian, who decides what goes into it. Children use the
+        app through that account, in kid mode, and cannot create one of their own.
+      </p>
+      <p>
+        What is stored about a child is only what a parent typed and what the child checked off. The
+        app asks for as little as it can work with — a first name, and optionally a grade — and that
+        is never enriched, cross-referenced, or built into a profile. A parent can read, correct,
+        export, or permanently delete everything about a child at any time, and deleting a kid takes
+        their activities and their entire record with them.
+      </p>
+
+      <h2>How long it is kept, and how to be rid of it</h2>
+      <ul>
+        <li><strong>While your account exists,</strong> your data stays as you left it. There is no separate archive, and no shadow copy of things you deleted.</li>
+        <li><strong>Deleting a kid</strong> deletes their activities and every check-off with them, immediately, in the database.</li>
+        <li><strong>Settings → Clear all data</strong> removes every kid, activity, and record on the account.</li>
+        <li><strong>Deleting your account</strong> removes everything attached to it. Write to us and it will be done.</li>
+        <li><strong>Settings → Export backup</strong> hands you the whole thing as a plain JSON file first, yours to keep.</li>
+      </ul>
+      <p>
+        Backups held by the infrastructure providers above roll off on their own schedule, typically
+        within thirty days.
+      </p>
+
+      <h2>Your rights</h2>
+      <p>
+        Depending on where you live, you may have the right to see what is held about you, correct
+        it, delete it, take a portable copy, or object to how it is handled. The app gives you most
+        of these directly — export and deletion are buttons in Settings, not requests you have to
+        file — and for anything else, write to us and it will be acted on. Nothing about the app gets
+        worse for you for exercising any of it, and there is no sale to opt out of, because there is
+        no sale.
+      </p>
+
+      <h2>Cookies</h2>
+      <p>
+        No advertising or tracking cookies are used. Your browser stores a Supabase sign-in session
+        so that you stay signed in, plus the small kid-mode preference described above. Clearing this
+        site's storage signs you out; your data is untouched and returns when you sign in again.
+      </p>
+
+      <h2>Changes to this policy</h2>
+      <p>
+        If this policy changes, the date at the top changes with it, and anything that materially
+        affects what happens to your family's data will be announced in the app before it takes
+        effect.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Questions, corrections, or a request to delete an account:
+        <a href="mailto:privacy@compassed4kids.com">privacy@compassed4kids.com</a>.
+      </p>
+
+      <footer>
+        <span>&copy; 2026 Compassed4Kids</span>
+        <a href="/">Back to the app</a>
+      </footer>
+    </div>
+  </body>
+</html>

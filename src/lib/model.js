@@ -148,6 +148,8 @@ export function newActivity(kidId, template = {}, order = 0) {
     days: normaliseDays(template.days),
     description: template.description || '',
     quiz: template.quiz === true,
+    questions: normaliseQuestions(template.questions),
+    questionsOnly: template.questionsOnly === true,
     active: true,
     order,
     createdAt: new Date().toISOString(),
@@ -166,6 +168,8 @@ export function migrateActivity(activity, index = 0) {
     // Off unless a parent said otherwise, so upgrading the app never starts
     // quizzing a child who was not being quizzed yesterday.
     quiz: activity.quiz === true,
+    questions: normaliseQuestions(activity.questions),
+    questionsOnly: activity.questionsOnly === true,
     active: activity.active !== false,
     order: Number.isFinite(activity.order) ? activity.order : index,
   }
@@ -227,6 +231,77 @@ export const DEFAULT_SETTINGS = {
    unpicking every activity they set up. */
 export const isQuizzed = (activity, settings = {}) =>
   activity?.quiz === true && settings.quizzes !== false
+
+/* ------------------------------------------------- the parent's own questions
+
+   A quiz is ten questions. By default Claude writes all ten from what the kid
+   typed, which is the only way to ask about a chapter nobody has read yet.
+   But a parent often knows exactly what they want asked — this week's spelling
+   list, the seven times table, the three vocabulary words that keep coming
+   back wrong — and no amount of describing that to a model beats writing the
+   question out.
+
+   So a parent can write their own. Theirs are asked first, always, word for
+   word. Claude fills the rest of the ten, unless `questionsOnly` says not to
+   bother — that is the override: ask mine and nothing else.
+
+   These live on the activity in plain form, answer index included, which does
+   mean a determined child with the developer tools open could read the key.
+   That is the same bar as `parentPin`, which sits in the same downloaded blob.
+   The questions Claude writes stay sealed because they can be — this key has
+   to survive in a row the parent edits, and a lock the parent cannot open is
+   not a feature. */
+
+export const QUIZ_QUESTIONS = 10
+
+export function newQuizQuestion() {
+  return { id: crypto.randomUUID(), question: '', options: ['', '', '', ''], answer: 0, because: '' }
+}
+
+/** Always four options and an answer that points at one of them, whatever was
+    in the row. A question that came back malformed renders as a broken quiz. */
+export function normaliseQuestions(list) {
+  if (!Array.isArray(list)) return []
+  return list.slice(0, QUIZ_QUESTIONS).map((q) => {
+    const options = Array.from({ length: 4 }, (_, i) => String(q?.options?.[i] ?? '').trim())
+    const answer = Number(q?.answer)
+    return {
+      id: q?.id || crypto.randomUUID(),
+      question: String(q?.question || '').trim(),
+      options,
+      answer: Number.isInteger(answer) && answer >= 0 && answer <= 3 ? answer : 0,
+      because: String(q?.because || '').trim(),
+    }
+  })
+}
+
+/** Has this one been finished? A half-typed question is not askable. */
+export const isCompleteQuestion = (q) =>
+  Boolean(q?.question?.trim()) && Array.isArray(q?.options) &&
+  q.options.length === 4 && q.options.every((o) => o.trim().length > 0)
+
+/** Has the parent started this row at all? Used to tell "not filled in yet"
+    from "left blank", so an untouched row can be dropped on save instead of
+    blocking it. */
+export const isStartedQuestion = (q) =>
+  Boolean(q?.question?.trim() || q?.because?.trim() || q?.options?.some((o) => o.trim()))
+
+/** The parent's questions, ready to ask. */
+export const ownQuestions = (activity) =>
+  normaliseQuestions(activity?.questions).filter(isCompleteQuestion)
+
+/** How many questions Claude is being asked for. Zero when the parent wrote
+    the whole quiz, or told us to ask only theirs. */
+export function generatedCount(activity) {
+  const own = ownQuestions(activity).length
+  if (own > 0 && activity?.questionsOnly === true) return 0
+  return Math.max(0, QUIZ_QUESTIONS - own)
+}
+
+/** Does this quiz need the kid to say what they did? Only if something is
+    being written from it — a fixed set of the parent's questions is ready
+    before the child touches anything. */
+export const quizNeedsNote = (activity) => generatedCount(activity) > 0
 
 /** How many of ten, or null if this completion was never quizzed. */
 export const quizScore = (completion) => {

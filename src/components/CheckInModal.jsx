@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Minus, Plus } from 'lucide-react'
 import Modal from './Modal.jsx'
-import { measureFor, measureWord, colorVar, isCounted } from '../lib/model.js'
+import { measureFor, measureWord, colorVar, isCounted, quizNeedsNote } from '../lib/model.js'
 
 /* What a kid is asked for after they tap something. Neither half is always
    there, and on a plain check-it-off activity with no quiz this modal never
-   opens at all — one tap is the whole interaction, which is the point of the
+   opens at all, one tap is the whole interaction, which is the point of the
    app.
 
    The number, when the activity counts one: a big stepper rather than a text
@@ -14,7 +14,12 @@ import { measureFor, measureWord, colorVar, isCounted } from '../lib/model.js'
 
    The note, when a quiz is switched on: the questions get written from it, so
    this is the sentence that decides whether the quiz is about the child's
-   actual homework or about nothing. The prompt asks for content, not effort. */
+   actual homework or about nothing. The prompt asks for content, not effort.
+
+   Unless the parent wrote the whole quiz themselves — then nothing is being
+   written from the note, and holding a child at an empty box for a sentence
+   nobody needs is friction we invented. It is still asked for, because it is
+   the line the parent reads in the feed; it just does not block. */
 export default function CheckInModal({ kid, activity, quizzed, note: initialNote = '', onSave, onClose }) {
   const measure = measureFor(activity)
   const counted = isCounted(activity)
@@ -22,8 +27,9 @@ export default function CheckInModal({ kid, activity, quizzed, note: initialNote
     counted ? Math.max(measure.step, activity.target || measure.step) : 0)
   const [note, setNote] = useState(initialNote)
 
+  const needsNote = quizzed && quizNeedsNote(activity)
   const bump = (delta) => setAmount((n) => Math.max(0, Math.round((n + delta) * 10) / 10))
-  const canSave = !quizzed || note.trim().length > 0
+  const canSave = !needsNote || note.trim().length > 0
 
   return (
     <Modal
@@ -75,7 +81,9 @@ export default function CheckInModal({ kid, activity, quizzed, note: initialNote
               onChange={(e) => setNote(e.target.value)}
             />
             <p className="hint">
-              A sentence or two is plenty. Then you get a few questions about it.
+              {needsNote
+                ? 'A sentence or two is plenty. Then you get a few questions about it.'
+                : 'Optional: Your questions are already written. This is just so a grown-up can read what you did.'}
             </p>
           </div>
         )}

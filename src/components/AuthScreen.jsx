@@ -7,7 +7,7 @@ const MODES = {
   signup: { title: 'Create your family account', cta: 'Create account', switchTo: 'signin', switchLabel: 'Already set up? Sign in' },
 }
 
-/* One account per family, held by a grown-up. Kids never sign in — they pick
+/* One account per family, held by a grown-up. Kids never sign in, they pick
    their name on the kid screen, which is why the parent side is what's behind
    a password (and, optionally, a PIN). */
 export default function AuthScreen({ initialMode = 'signin', onBack }) {
@@ -124,6 +124,12 @@ export default function AuthScreen({ initialMode = 'signin', onBack }) {
         >
           {copy.switchLabel}
         </button>
+
+        {/* A parent handing over their child's name deserves to see what
+            happens to it before they type it, not after. */}
+        <p className="hint auth-legal">
+          Your family's data is never sold. <a href="/privacy.html">Privacy policy</a>
+        </p>
       </div>
     </div>
   )

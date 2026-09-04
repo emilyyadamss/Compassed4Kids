@@ -1107,6 +1107,12 @@ textarea.input { height: auto; padding: 10px 13px; resize: vertical; min-height:
   padding: 24px;
 }
 .auth-card { width: 100%; max-width: 400px; }
+.auth-legal { margin-top: 22px; text-align: center; }
+.auth-legal a { color: inherit; text-underline-offset: 3px; }
+.auth-legal a:hover { color: var(--accent); }
+
+/* a link wearing the button shape */
+a.btn { text-decoration: none; }
 
 .landing {
   min-height: 100%;
@@ -1155,6 +1161,18 @@ textarea.input { height: auto; padding: 10px 13px; resize: vertical; min-height:
 }
 .landing-feature h3 { font-size: 16.5px; margin-bottom: 5px; }
 .landing-feature p { font-size: 13.5px; line-height: 1.55; color: var(--text-secondary); }
+.landing-footer {
+  margin-top: 46px;
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.landing-footer a { color: var(--text-secondary); text-decoration: none; }
+.landing-footer a:hover { color: var(--accent); text-decoration: underline; }
 
 /* ============================================================ mobile */
 
@@ -1311,6 +1329,62 @@ textarea.quiz-input {
   resize: vertical;
   font-family: inherit;
 }
+
+/* --------------------------------------- the questions a parent writes herself
+
+   Ten of these in a row would be a very long modal, so each one is a compact
+   card: the wording, four choices, and the line shown afterwards. The letter
+   beside each choice is the answer key — it is a radio, not decoration, and
+   the green one is the answer. */
+
+.quiz-writer { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+.quiz-writer > .label + .hint { margin-top: -5px; }
+
+.quiz-own {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--border);
+  background: var(--surface-sunken);
+}
+.quiz-own > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.quiz-own .input { height: 38px; font-size: 14px; background: var(--surface-1); }
+
+.quiz-own-options { display: flex; flex-direction: column; gap: 6px; }
+.quiz-own-opt { display: flex; align-items: center; gap: 8px; }
+.quiz-own-key {
+  width: 30px; height: 30px;
+  flex: none;
+  border-radius: 999px;
+  border: 1.5px solid var(--border-strong);
+  background: var(--surface-1);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  transition: background-color 160ms var(--ease), border-color 160ms var(--ease),
+              color 160ms var(--ease), transform 160ms var(--ease-spring);
+}
+.quiz-own-key:hover { border-color: var(--good); color: var(--text-primary); }
+.quiz-own-key:active { transform: scale(0.92); }
+.quiz-own-key[aria-checked="true"] {
+  background: color-mix(in oklab, var(--good) 20%, transparent);
+  border-color: color-mix(in oklab, var(--good) 60%, transparent);
+  color: var(--good-text);
+}
+
+.quiz-own-add { align-self: flex-start; }
+.quiz-own-warn { color: var(--late-text); font-weight: 600; }
 
 /* ------------------------------------------------------------ the questions */
 

@@ -7,6 +7,7 @@
    comes down the wire. */
 
 import { supabase } from './supabaseClient.js'
+import { ownQuestions } from './model.js'
 
 async function post(body) {
   const { data } = await supabase.auth.getSession()
@@ -35,7 +36,12 @@ async function post(body) {
 
 /** Ten questions about what this kid says they just did, plus a sealed answer
     key to hand back to `gradeQuiz`. `enough` is false when the note was too
-    thin to write real questions from. */
+    thin to write real questions from.
+
+    Any questions the parent wrote themselves go up with the request. The
+    server decides what to do with them — asks them first, and works out how
+    many it still needs from Claude — so that rule lives in one place rather
+    than being agreed on by both halves. */
 export function generateQuiz({ kid, activity, amount, note }) {
   return post({
     action: 'generate',
@@ -47,6 +53,13 @@ export function generateQuiz({ kid, activity, amount, note }) {
     note,
     kidName: kid?.name || '',
     grade: kid?.grade || '',
+    questions: ownQuestions(activity).map((q) => ({
+      question: q.question,
+      options: q.options,
+      answer: q.answer,
+      because: q.because,
+    })),
+    only: activity.questionsOnly === true,
   })
 }
 

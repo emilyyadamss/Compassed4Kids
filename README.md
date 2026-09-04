@@ -94,7 +94,8 @@ When it is on, finishing that activity works differently:
 1. The kid says, in a sentence or two, what they actually did. *"I read
    chapters 3 and 4 of Percy Jackson. He found out Poseidon was his father."*
 2. Claude turns that, plus the description the parent wrote for the activity,
-   into ten multiple-choice questions about it.
+   into ten multiple-choice questions about it — or fills in around the ones
+   the parent wrote themselves, below.
 3. The kid taps their way through. Four options, one screen per question, no
    typing, no timer, and no telling them they got one wrong until the end — a
    child who has just been told they are failing answers the rest worse, and
@@ -112,6 +113,30 @@ lying about the child, which is the one thing it is built not to do. And the
 score itself is only ever information — a bad score is still a finished
 activity, still a tick, still a streak. Partial credit is real credit here
 too.
+
+### Or write the questions yourself
+
+Describing the work shapes the questions. Writing them settles them. A parent
+who knows that this week is the seven times table, or these six spelling
+words, can type the questions out in the activity editor: the wording, four
+choices, a tap on the one that is right, and optionally the line the kid sees
+afterwards.
+
+Those are asked first, word for word, every time. Claude writes the rest of
+the ten around them and is told not to ask the same thing twice. **Ask only my
+questions** turns that off — then the quiz is exactly the parent's list, the
+same every night, and no model is involved at all. Write all ten and it
+decides itself.
+
+A fixed quiz needs nothing from Claude, so it also survives Claude: if the
+service is unreachable, an activity with questions of its own asks those
+rather than showing the kid an error. It is also the one case where the kid's
+sentence is optional — nothing is being written from it, so it is only there
+for the parent to read.
+
+The one thing a thin sentence never buys is a shorter quiz. *"Did it"* still
+comes back asking for more, even when the parent has written half the
+questions already, because the other lesson is the one children learn fastest.
 
 Two switches have to agree: the per-activity one, and a master switch in
 Settings for the week where the questions are one thing too many.

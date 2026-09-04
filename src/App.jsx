@@ -554,11 +554,11 @@ export default function App() {
                   <div className="eyebrow">{formatLong(today)}</div>
                   <h1 className="page-title">Today</h1>
                   <p className="page-sub">
-                    Everything your kids check off lands here the moment they tap it.
+                    Everything your kids check off lands here the moment they tap it!
                   </p>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <button className="btn" onClick={openNewKid}><Plus size={16} /> Add a kid</button>
+                  <button className="btn" onClick={openNewKid}><Plus size={16} /> Add a kiddo</button>
                   <button className="btn btn-primary" onClick={() => setMode('kid')}>
                     <Smile size={16} /> Kid mode
                   </button>

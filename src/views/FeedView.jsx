@@ -18,7 +18,7 @@ export default function FeedView({ feed, onDelete }) {
       <div className="empty">
         <h3>Nothing checked off yet</h3>
         <p>
-          As soon as a kid taps something on their screen, it lands here — and on your phone,
+          As soon as a kid taps something on their screen, it lands here. and on your phone,
           if you have this open there too.
         </p>
       </div>

@@ -24,10 +24,10 @@ export default function LandingScreen({ onSignUp, onSignIn }) {
     <div className="landing">
       <div className="landing-inner">
         <Brand className="brand" size={28} />
-        <h1>The homework got done. Now you know.</h1>
+        <h1>Stay on track on your kids road to success</h1>
         <p className="lede">
-          Your kid checks off their afternoon on the family tablet. You see it on your phone,
-          as it happens, not at 9pm when it is too late to do anything about it.
+          Your kid checks off their reading or homework on the family tablet. You see it on your phone
+          as it happens, see first hand how well they perform!
         </p>
 
         <div className="landing-actions">
@@ -44,6 +44,11 @@ export default function LandingScreen({ onSignUp, onSignIn }) {
             </div>
           ))}
         </div>
+
+        <footer className="landing-footer">
+          <span>&copy; {new Date().getFullYear()} Compassed4Kids</span>
+          <a href="/privacy.html">Privacy policy</a>
+        </footer>
       </div>
     </div>
   )

@@ -134,8 +134,8 @@ export default function SettingsView({
             <div className="card-title">Quizzes</div>
             <div className="card-sub">
               Switched on per activity, on the activity itself. When it is on, finishing that
-              activity means saying what they did and answering ten questions written by Claude
-              about it — and the activity is not counted done until they have. The score lands
+              activity means saying what they did and answering 10 questions written with AI assitance
+              about it, and the activity is not counted done until they have. The score lands
               in your feed with whatever they got wrong.
             </div>
           </div>
@@ -242,6 +242,21 @@ export default function SettingsView({
             {confirmClear ? 'Really delete every kid and record?' : 'Clear all data'}
           </button>
         </div>
+      </div>
+
+      <div className="card">
+        <div className="card-head" style={{ marginBottom: 8 }}>
+          <div>
+            <div className="card-title">Privacy</div>
+            <div className="card-sub">
+              Your family's data is never sold, and only this account can read it. The policy
+              says what is stored, what quizzing sends to our AI, and how to delete all of it.
+            </div>
+          </div>
+        </div>
+        <a className="btn" href="/privacy.html" target="_blank" rel="noreferrer">
+          Read the privacy policy for more info
+        </a>
       </div>
     </div>
   )

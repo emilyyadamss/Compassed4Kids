@@ -3,7 +3,7 @@ import { Delete, Lock } from 'lucide-react'
 import Modal from './Modal.jsx'
 
 /* Stands between kid mode and the grown-up side. This is a speed bump, not
-   security — the real boundary is the Supabase password, and a determined
+   security, the real boundary is the Supabase password, and a determined
    eleven-year-old with the family iPad is not the threat model. It exists so a
    younger sibling cannot wander into the settings and delete a kid. */
 export default function PinGate({ pin, onUnlock, onClose }) {

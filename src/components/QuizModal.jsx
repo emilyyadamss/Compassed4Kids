@@ -3,10 +3,11 @@ import { Check, X, Sparkles } from 'lucide-react'
 import Modal from './Modal.jsx'
 import Loader from './Loader.jsx'
 import { Avatar } from '../lib/icons.jsx'
-import { colorVar } from '../lib/model.js'
+import { colorVar, generatedCount } from '../lib/model.js'
 import { generateQuiz, gradeQuiz } from '../lib/quiz.js'
 
-/* Ten questions about the thing the kid just said they did.
+/* Ten questions about the thing the kid just said they did — or however many
+   there are, when a parent has written some or all of them by hand.
 
    This is the one screen in kid mode that can tell a parent something the kid
    did not choose to tell them, so it is built to be fair. It asks about the
@@ -116,7 +117,17 @@ export default function QuizModal({ kid, activity, amount, note, onFinish, onEdi
   if (phase === 'loading' || phase === 'scoring') {
     body = (
       <div style={{ padding: '18px 0' }}>
-        <Loader label={phase === 'loading' ? 'Writing your questions…' : 'Checking your answers…'} />
+        {/* Nothing is being written when the parent wrote the quiz, so we do
+            not claim it is. */}
+        <Loader
+          label={
+            phase === 'scoring'
+              ? 'Checking your answers…'
+              : generatedCount(activity) > 0
+                ? 'Writing your questions…'
+                : 'Getting your questions…'
+          }
+        />
       </div>
     )
   }
