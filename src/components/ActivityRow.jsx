@@ -1,6 +1,6 @@
 import { Check, Pencil } from 'lucide-react'
 import { ActivityIcon } from '../lib/icons.jsx'
-import { measureFor, measureWord, daysLabel } from '../lib/model.js'
+import { measureFor, measureWord, daysLabel, quizScore } from '../lib/model.js'
 import { formatTime } from '../lib/date.js'
 
 /* One activity on one day, on the grown-up side. The checkbox works here too —
@@ -18,6 +18,13 @@ export default function ActivityRow({ activity, status, onToggle, onEdit, showDa
   if (!done && target > 0 && measure.many) detail.push(`${target} ${measure.many}`)
   if (showDays) detail.push(daysLabel(activity.days))
   if (!scheduled && !done) detail.push('not scheduled today')
+
+  /* The score if it has been earned today, otherwise just the fact that
+     questions are waiting — so a parent glancing at the list can see which
+     activities are quizzed without opening the editor. */
+  const scored = done ? quizScore(entry) : null
+  if (scored) detail.push(`quiz ${scored.score}/${scored.total}`)
+  else if (activity.quiz) detail.push('questions after')
 
   return (
     <div className={`act-row${done ? ' is-done' : ''}`}>

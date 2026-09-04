@@ -8,6 +8,7 @@ import SettingsView from './views/SettingsView.jsx'
 import KidEditor from './components/KidEditor.jsx'
 import ActivityEditor from './components/ActivityEditor.jsx'
 import CheckInModal from './components/CheckInModal.jsx'
+import QuizModal from './components/QuizModal.jsx'
 import PinGate from './components/PinGate.jsx'
 import MobileNav from './components/MobileNav.jsx'
 import AuthScreen from './components/AuthScreen.jsx'
@@ -25,10 +26,10 @@ import {
 import { buildSample } from './lib/sample.js'
 import {
   DEFAULT_SETTINGS, colorVar, newKid, newActivity, newCompletion,
-  indexActivities, isCounted,
+  indexActivities, isCounted, isQuizzed,
 } from './lib/model.js'
 import {
-  indexCompletions, daysFor, kidDay, buildFeed, unreadCount, completionLine,
+  indexCompletions, daysFor, kidDay, buildFeed, unreadCount, completionLine, quizLine,
 } from './lib/stats.js'
 import { todayKey, formatLong } from './lib/date.js'
 
@@ -52,7 +53,8 @@ export default function App() {
 
   const [editingKid, setEditingKid] = useState(null)          // { kid, isNew }
   const [editingActivity, setEditingActivity] = useState(null) // { activity, kid, isNew }
-  const [checkingIn, setCheckingIn] = useState(null)           // { kid, activity }
+  const [checkingIn, setCheckingIn] = useState(null)           // { kid, activity, quizzed, note }
+  const [quizzing, setQuizzing] = useState(null)               // { kid, activity, amount, note }
   const [celebrating, setCelebrating] = useState(false)
   const [notifyState, setNotifyState] = useState(notifySupport)
   const [toasts, setToasts] = useState([])
@@ -136,7 +138,8 @@ export default function App() {
   }, [userId])
 
   const announce = useCallback((kid, activity, completion) => {
-    const line = `${kid?.name || 'Someone'} · ${completionLine(activity, completion)}`
+    const quiz = quizLine(completion)
+    const line = `${kid?.name || 'Someone'} · ${completionLine(activity, completion)}${quiz ? ` · ${quiz}` : ''}`
     toast(line)
     if (typeof Notification !== 'undefined' && Notification.permission === 'granted' && document.hidden) {
       try {
@@ -255,20 +258,22 @@ export default function App() {
   /* Writing the completion, and deciding whether the day just got finished.
      The celebration is checked here rather than in a render effect so it fires
      exactly once, on the tap that finished the list. */
-  const checkOff = useCallback((kid, activity, amount) => {
-    const completion = newCompletion(activity.kidId, activity.id, today, amount)
+  const checkOff = useCallback((kid, activity, amount, note = '', quiz = null) => {
+    const completion = newCompletion(activity.kidId, activity.id, today, amount, note, quiz)
     ownWrites.current.add(completion.id)
     setState((s) => ({ ...s, completions: [...s.completions, completion] }))
     putCompletion(userId, completion).catch(syncFail('Could not save that. It may not have reached your phone'))
     setCheckingIn(null)
+    setQuizzing(null)
 
     const day = kidDay(byKid.get(activity.kidId) || [], byActivity, today)
     const finishedTheDay = !day.nothingDue && day.remaining.every((i) => i.activity.id === activity.id)
     if (finishedTheDay && settings.celebrate && mode === 'kid') setCelebrating(true)
 
+    const scored = quizLine(completion)
     toast(finishedTheDay
-      ? `${kid?.name || 'All'} done for today!`
-      : completionLine(activity, completion))
+      ? `${kid?.name || 'All'} done for today!${scored ? ` (${scored})` : ''}`
+      : `${completionLine(activity, completion)}${scored ? ` · ${scored}` : ''}`)
   }, [userId, today, byKid, byActivity, settings.celebrate, mode, syncFail, toast])
 
   /* One handler for every checkbox in the app. It works out for itself whether
@@ -282,9 +287,20 @@ export default function App() {
       return
     }
     const kid = kids.find((k) => k.id === activity.kidId) || null
-    if (isCounted(activity)) { setCheckingIn({ kid, activity }); return }
-    checkOff(kid, activity, 0)
-  }, [byActivity, today, kids, checkOff, syncFail, toast])
+
+    /* A quizzed activity stops here, even a plain check-it-off one: there are
+       no questions to write until the kid says what they did.
+
+       Only in kid mode, though. On the grown-up side this same handler is the
+       checkbox a parent taps for reading that happened in the car, and making
+       them sit their child's quiz to record it would be absurd — a parent is
+       already the authority here, they can edit or delete any of this. The
+       row says a grown-up checked it, so the feed still tells the truth about
+       why there is no score. */
+    const quizzed = isQuizzed(activity, settings) && mode === 'kid'
+    if (isCounted(activity) || quizzed) { setCheckingIn({ kid, activity, quizzed, note: '' }); return }
+    checkOff(kid, activity, 0, '', isQuizzed(activity, settings) ? { skipped: 'parent' } : null)
+  }, [byActivity, today, kids, settings, mode, checkOff, syncFail, toast])
 
   const deleteCompletion = useCallback((id) => {
     setState((s) => ({ ...s, completions: s.completions.filter((c) => c.id !== id) }))
@@ -320,7 +336,7 @@ export default function App() {
   useEffect(() => {
     if (mode !== 'parent') return
     const onKey = (e) => {
-      if (editingKid || editingActivity || checkingIn || pinPrompt) return
+      if (editingKid || editingActivity || checkingIn || quizzing || pinPrompt) return
       const t = e.target
       if (t instanceof HTMLElement && /input|textarea|select/i.test(t.tagName)) return
       if (e.metaKey || e.ctrlKey || e.altKey) return
@@ -332,7 +348,7 @@ export default function App() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [mode, editingKid, editingActivity, checkingIn, pinPrompt, openNewKid])
+  }, [mode, editingKid, editingActivity, checkingIn, quizzing, pinPrompt, openNewKid])
 
   /* ------------------------------------------------------------- rendering */
 
@@ -365,8 +381,43 @@ export default function App() {
         <CheckInModal
           kid={checkingIn.kid}
           activity={checkingIn.activity}
-          onSave={(amount) => checkOff(checkingIn.kid, checkingIn.activity, amount)}
+          quizzed={checkingIn.quizzed}
+          note={checkingIn.note}
+          onSave={(amount, note) => {
+            /* Where the two paths part. Without a quiz this tap writes the
+               completion and the kid is done. With one, nothing is written
+               yet — the row is only earned on the far side of the questions,
+               and walking away here leaves the activity genuinely unfinished
+               rather than half-recorded. */
+            if (checkingIn.quizzed) {
+              setCheckingIn(null)
+              setQuizzing({ kid: checkingIn.kid, activity: checkingIn.activity, amount, note })
+              return
+            }
+            checkOff(
+              checkingIn.kid, checkingIn.activity, amount, note,
+              isQuizzed(checkingIn.activity, settings) ? { skipped: 'parent' } : null,
+            )
+          }}
           onClose={() => setCheckingIn(null)}
+        />
+      )}
+
+      {quizzing && (
+        <QuizModal
+          kid={quizzing.kid}
+          activity={quizzing.activity}
+          amount={quizzing.amount}
+          note={quizzing.note}
+          onFinish={(quiz) =>
+            checkOff(quizzing.kid, quizzing.activity, quizzing.amount, quizzing.note, quiz)}
+          onEdit={() => {
+            setQuizzing(null)
+            setCheckingIn({
+              kid: quizzing.kid, activity: quizzing.activity, quizzed: true, note: quizzing.note,
+            })
+          }}
+          onClose={() => setQuizzing(null)}
         />
       )}
 
@@ -407,6 +458,7 @@ export default function App() {
           byKid={byKid}
           byActivity={byActivity}
           today={today}
+          settings={settings}
           onToggle={toggleActivity}
           onExit={leaveKidMode}
         />

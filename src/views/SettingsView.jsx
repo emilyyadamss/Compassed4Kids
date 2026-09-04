@@ -129,6 +129,38 @@ export default function SettingsView({
       </div>
 
       <div className="card">
+        <div className="card-head" style={{ marginBottom: 4 }}>
+          <div>
+            <div className="card-title">Quizzes</div>
+            <div className="card-sub">
+              Switched on per activity, on the activity itself. When it is on, finishing that
+              activity means saying what they did and answering ten questions written by Claude
+              about it — and the activity is not counted done until they have. The score lands
+              in your feed with whatever they got wrong.
+            </div>
+          </div>
+        </div>
+
+        <div className="switch">
+          <div className="switch-copy">
+            <div className="t">Ask questions after a goal</div>
+            <div className="s">
+              {settings.quizzes
+                ? 'On for any activity you have switched it on for. Turn this off for a week where the questions are one thing too many.'
+                : 'Off everywhere, whatever each activity says. Nobody gets asked anything.'}
+            </div>
+          </div>
+          <button
+            className="toggle"
+            role="switch"
+            aria-checked={settings.quizzes !== false}
+            aria-label="Ask questions after a goal"
+            onClick={() => setSettings({ quizzes: settings.quizzes === false })}
+          />
+        </div>
+      </div>
+
+      <div className="card">
         <div className="card-head" style={{ marginBottom: 8 }}>
           <div>
             <div className="card-title">Parent PIN</div>

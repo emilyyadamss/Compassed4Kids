@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Modal from './Modal.jsx'
 import { ActivityIcon, ACTIVITY_ICON_CHOICES } from '../lib/icons.jsx'
+import { Sparkles } from 'lucide-react'
 import {
   MEASURES, ACTIVITY_TEMPLATES, EVERY_DAY, SCHOOL_DAYS, WEEKENDS,
   normaliseDays, measureFor, colorVar,
@@ -48,7 +49,7 @@ export default function ActivityEditor({ activity, kid, isNew, onSave, onDelete,
           <button
             className="btn btn-primary"
             disabled={!canSave}
-            onClick={() => onSave({ ...draft, name: draft.name.trim(), days })}
+            onClick={() => onSave({ ...draft, name: draft.name.trim(), description: (draft.description || '').trim(), days })}
           >
             Save
           </button>
@@ -161,6 +162,49 @@ export default function ActivityEditor({ activity, kid, isNew, onSave, onDelete,
           <p className="hint" style={{ marginTop: 8 }}>
             On days you leave off, this never appears and is never counted as missed.
           </p>
+        </div>
+
+        {/* Quizzing is off unless a parent turns it on, per activity. It is
+            the right thing for reading and the wrong thing for chores, so it
+            is a decision made here rather than once for the whole app. */}
+        <div className="quiz-setup">
+          <div className="switch" style={{ paddingTop: 0 }}>
+            <div className="switch-copy">
+              <div className="t">
+                <Sparkles size={14} style={{ verticalAlign: '-2px', marginRight: 6 }} />
+                Ask questions afterwards
+              </div>
+              <div className="s">
+                When {kid?.name || 'they'} finish this, they say what they did and answer ten
+                questions about it. The score comes to you. It is not done until they answer.
+              </div>
+            </div>
+            <button
+              className="toggle"
+              role="switch"
+              aria-checked={draft.quiz === true}
+              aria-label="Ask questions afterwards"
+              onClick={() => set({ quiz: !draft.quiz })}
+            />
+          </div>
+
+          {draft.quiz && (
+            <div className="field" style={{ marginTop: 4 }}>
+              <label htmlFor="act-description">What is this work, so the questions land?</label>
+              <textarea
+                id="act-description"
+                className="input quiz-input"
+                rows={3}
+                value={draft.description || ''}
+                placeholder="Fifth grade chapter books. Ask about the plot, the characters, and any word they might not know."
+                onChange={(e) => set({ description: e.target.value })}
+              />
+              <p className="hint">
+                Optional, but it is what keeps the questions on the subject you care about
+                rather than whatever {kid?.name || 'your kid'} happens to mention.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </Modal>

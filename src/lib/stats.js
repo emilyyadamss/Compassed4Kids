@@ -4,7 +4,7 @@
    actually produced. */
 
 import { addDays, todayKey as todayKeyNow } from './date.js'
-import { isScheduled, measureFor, isCounted } from './model.js'
+import { isScheduled, measureFor, isCounted, quizScore } from './model.js'
 
 /** activityId → Map(dateKey → completion). One completion per activity per day;
     a later one for the same day wins, so a re-log corrects rather than doubles. */
@@ -167,6 +167,23 @@ export function needsAttention(kids, byKid, byActivity, today = todayKeyNow(), n
     }
   }
   return out
+}
+
+/* What the quiz added to a completion, as a phrase, or null if this one was
+   never quizzed. Kept apart from `completionLine` because the feed shows it as
+   its own chip while a toast has to fold it into the sentence. */
+export function quizLine(completion) {
+  const scored = quizScore(completion)
+  if (scored) return `quiz ${scored.score}/${scored.total}`
+  const skipped = completion?.quiz?.skipped
+  if (!skipped) return null
+  /* A skipped quiz is still worth saying out loud. A parent who switched
+     quizzing on and then sees nothing should be told why there is nothing,
+     rather than left to assume the feature is broken or being dodged. */
+  if (skipped === 'parent') return 'checked off by a grown-up'
+  if (skipped === 'vague') return 'quiz skipped — too little detail'
+  if (skipped === 'error') return 'quiz skipped — could not be made'
+  return 'quiz skipped'
 }
 
 /** "Read 20 minutes" / "Finished Homework" — one line describing a completion,

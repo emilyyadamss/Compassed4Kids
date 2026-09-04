@@ -146,6 +146,8 @@ export function newActivity(kidId, template = {}, order = 0) {
     measure: template.measure || 'done',
     target: Math.max(0, Number(template.target) || 0),
     days: normaliseDays(template.days),
+    description: template.description || '',
+    quiz: template.quiz === true,
     active: true,
     order,
     createdAt: new Date().toISOString(),
@@ -160,19 +162,27 @@ export function migrateActivity(activity, index = 0) {
     measure: measureFor(activity).id,
     target: Math.max(0, Number(activity.target) || 0),
     days: normaliseDays(activity.days),
+    description: String(activity.description || '').trim(),
+    // Off unless a parent said otherwise, so upgrading the app never starts
+    // quizzing a child who was not being quizzed yesterday.
+    quiz: activity.quiz === true,
     active: activity.active !== false,
     order: Number.isFinite(activity.order) ? activity.order : index,
   }
 }
 
-export function newCompletion(kidId, activityId, dateKey, amount = 0, note = '') {
+export function newCompletion(kidId, activityId, dateKey, amount = 0, note = '', quiz = null) {
   return {
     id: crypto.randomUUID(),
     kidId,
     activityId,
     date: dateKey,
     amount: Math.max(0, Number(amount) || 0),
+    /* What the child said they did. Only asked for on quizzed activities, and
+       it is what the questions get written from — so it is part of the record
+       a parent reads, not scratch input. */
     note: String(note || '').trim(),
+    quiz: quiz || null,
     completedAt: new Date().toISOString(),
   }
 }
@@ -204,4 +214,23 @@ export const DEFAULT_SETTINGS = {
   feedSeenAt: null,       // ISO stamp; any completion newer than this is unread
   behindAfterHour: 17,    // before this hour, "not yet" is just "not yet"
   celebrate: true,        // the little burst when a kid finishes their day
+  quizzes: true,          // the master switch over every activity's own quiz flag
+}
+
+/* ------------------------------------------------------------------- quiz */
+
+/* Whether finishing this activity should be followed by ten questions.
+
+   Two switches, and both have to be on. The per-activity flag is the real
+   decision — quizzing Reading is the point, quizzing Chores is nonsense — and
+   the setting is a single lever a parent can pull on a bad week without
+   unpicking every activity they set up. */
+export const isQuizzed = (activity, settings = {}) =>
+  activity?.quiz === true && settings.quizzes !== false
+
+/** How many of ten, or null if this completion was never quizzed. */
+export const quizScore = (completion) => {
+  const quiz = completion?.quiz
+  if (!quiz || !Number.isFinite(quiz.total) || quiz.total <= 0) return null
+  return { score: Math.max(0, Number(quiz.score) || 0), total: quiz.total }
 }

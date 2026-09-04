@@ -8,6 +8,18 @@ import { addDays, todayKey, fromKey } from './date.js'
 
 const DAYS_OF_HISTORY = 21
 
+/* Maya's reading is the one quizzed activity in the sample, so the feature has
+   something to show before a parent has set anything up themselves. These are
+   the notes she "typed" — the sentences the questions would have been written
+   from — and they cycle so three weeks of evenings do not all read alike. */
+const SAMPLE_NOTES = [
+  'I read two chapters of Because of Winn-Dixie. Opal found the dog in the grocery store and asked the manager if she could keep him.',
+  'Charlotte\'s Web, chapters 5 and 6. Charlotte explained how she catches flies in her web and Wilbur thought it was cruel at first.',
+  'I read about the Boxcar Children finding the blue tablecloth and the cracked pink cup in the dump.',
+  'Frindle, chapter 4. Nick made up a new word for pen and got the whole class saying it to annoy Mrs Granger.',
+  'Two chapters of Sarah, Plain and Tall. Sarah wrote back to Papa and said she would come and that she sings.',
+]
+
 /* A completion is stamped at a plausible hour rather than "now", so the feed
    reads like three weeks of evenings instead of three weeks logged at once. */
 function stampFor(dateKey, hour, minute) {
@@ -40,7 +52,12 @@ export function buildSample() {
   const activities = [
     newActivity(maya.id, { name: 'Homework', icon: 'homework', measure: 'done', days: SCHOOL_DAYS }, 0),
     newActivity(maya.id, { name: 'Kumon math', icon: 'kumon', measure: 'worksheets', target: 2, days: EVERY_DAY }, 1),
-    newActivity(maya.id, { name: 'Reading', icon: 'reading', measure: 'minutes', target: 20, days: EVERY_DAY }, 2),
+    newActivity(maya.id, {
+      name: 'Reading', icon: 'reading', measure: 'minutes', target: 20, days: EVERY_DAY,
+      quiz: true,
+      description: 'Fourth grade chapter books. Ask about what happened, who did it, and any '
+        + 'word she might have had to work out from context.',
+    }, 2),
     newActivity(maya.id, { name: 'Piano practice', icon: 'piano', measure: 'minutes', target: 30, days: SCHOOL_DAYS }, 3),
 
     newActivity(theo.id, { name: 'Homework', icon: 'homework', measure: 'done', days: SCHOOL_DAYS }, 0),
@@ -83,6 +100,27 @@ export function buildSample() {
 
       const c = newCompletion(activity.kidId, activity.id, key, amount)
       c.completedAt = stampFor(key, hour, Math.round(minute + spread * 20))
+
+      /* A quizzed activity carries what she said she did and how she scored.
+         Deterministic like everything else here, and weighted high without
+         being perfect — a sample where every score is 10/10 would not show a
+         parent what the feature is actually for. */
+      if (activity.quiz) {
+        const roll2 = hash(`quiz:${seed}:${key}`)
+        const score = 6 + Math.floor(roll2 * 5) // 6 to 10
+        c.note = SAMPLE_NOTES[Math.floor(hash(`note:${seed}:${key}`) * SAMPLE_NOTES.length)]
+        c.quiz = {
+          score,
+          total: 10,
+          at: c.completedAt,
+          missed: Array.from({ length: 10 - score }, (_, i) => ({
+            question: `Question ${i + 1} she got wrong.`,
+            chose: 'What she picked',
+            answer: 'What the book actually said',
+          })),
+        }
+      }
+
       completions.push(c)
     }
   }

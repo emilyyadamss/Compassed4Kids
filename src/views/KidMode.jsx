@@ -3,7 +3,7 @@ import { Check, ChevronLeft, Lock } from 'lucide-react'
 import { Avatar, ActivityIcon } from '../lib/icons.jsx'
 import ProgressRing from '../components/ProgressRing.jsx'
 import Brand from '../components/Brand.jsx'
-import { colorVar, measureFor, measureWord } from '../lib/model.js'
+import { colorVar, measureFor, measureWord, isQuizzed, quizScore } from '../lib/model.js'
 import { kidDay, kidStreak } from '../lib/stats.js'
 
 /* The kid's whole app.
@@ -12,7 +12,7 @@ import { kidDay, kidStreak } from '../lib/stats.js'
    thing. There is no navigation, no history, no numbers to interpret and no
    way to reach the settings. The only text a child has to read is the name of
    the activity and their own name. */
-export default function KidMode({ kids, byKid, byActivity, today, onToggle, onExit }) {
+export default function KidMode({ kids, byKid, byActivity, today, settings, onToggle, onExit }) {
   const [kidId, setKidId] = useState(() => (kids.length === 1 ? kids[0].id : null))
   const kid = kids.find((k) => k.id === kidId) || null
 
@@ -119,13 +119,21 @@ export default function KidMode({ kids, byKid, byActivity, today, onToggle, onEx
 
         {day.items.map(({ activity, status }) => {
           const measure = measureFor(activity)
-          const sub = status.done
+          const scored = quizScore(status.entry)
+
+          /* Say up front that questions are coming. A child who taps expecting
+             to be finished and instead gets a quiz learns to put off tapping,
+             which costs us the one number this whole app is built on. */
+          let sub = status.done
             ? status.amount > 0 && measure.many
               ? `${status.amount} ${measureWord(status.amount, measure)}, done!`
               : 'Done!'
             : activity.target > 0 && measure.many
               ? `${activity.target} ${measure.many}`
               : 'Tap when you finish'
+
+          if (scored) sub += ` · ${scored.score}/${scored.total} on the questions`
+          else if (!status.done && isQuizzed(activity, settings)) sub += ' · then a few questions'
 
           return (
             <button

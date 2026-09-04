@@ -11,7 +11,7 @@ anything.
 
 ```bash
 npm install
-cp .env.example .env   # then fill in your Supabase project URL + anon key
+cp .env.example .env   # Supabase URL + anon key; a Claude API key if you want quizzes
 npm run dev
 ```
 
@@ -82,6 +82,68 @@ them**. Two rules keep it fair:
 The same applies per activity, so weekends do not break a school-days-only
 homework streak.
 
+## Ten questions, if you ask for them
+
+Checking a box is a claim, and for reading in particular it is a claim a
+parent has no way to audit. So an activity can be set to **ask questions
+afterwards** — a switch on the activity itself, off by default, because it is
+the right thing for reading and a silly thing for feeding the cat.
+
+When it is on, finishing that activity works differently:
+
+1. The kid says, in a sentence or two, what they actually did. *"I read
+   chapters 3 and 4 of Percy Jackson. He found out Poseidon was his father."*
+2. Claude turns that, plus the description the parent wrote for the activity,
+   into ten multiple-choice questions about it.
+3. The kid taps their way through. Four options, one screen per question, no
+   typing, no timer, and no telling them they got one wrong until the end — a
+   child who has just been told they are failing answers the rest worse, and
+   then we are measuring the quiz instead of the homework.
+4. The score lands in the parent's feed with whatever they missed.
+
+**The activity is not done until the questions are answered.** That is the
+point of it: the check-off and the evidence arrive together, and walking away
+mid-quiz leaves the activity genuinely unfinished rather than half-recorded.
+
+Nothing about this can trap a child, though. If Claude cannot be reached, or
+the questions cannot be written, the kid is let through and the feed says the
+quiz was skipped and why. Losing a streak to our outage would be the app
+lying about the child, which is the one thing it is built not to do. And the
+score itself is only ever information — a bad score is still a finished
+activity, still a tick, still a streak. Partial credit is real credit here
+too.
+
+Two switches have to agree: the per-activity one, and a master switch in
+Settings for the week where the questions are one thing too many.
+
+The questions are a kid-mode thing. A parent ticking the same box from their
+own dashboard — reading that happened in the car, homework done at a
+grandparent's — is not asked anything, because a parent is already the
+authority over every row in here. The feed says that one was checked off by a
+grown-up, so an evening with no score is never a mystery.
+
+### Where the key lives
+
+The rest of this app is a static bundle that talks straight to Supabase, and
+a Claude API key cannot go in a static bundle — anything reachable from
+`import.meta.env.VITE_*` is compiled into the JavaScript your users download.
+So quizzes are the one thing here with a server behind them:
+[`api/quiz.js`](api/quiz.js), a single Vercel function holding an
+unprefixed `ANTHROPIC_API_KEY`.
+
+It will not write a quiz for anyone who is not a signed-in family — the
+browser sends its Supabase session and the function checks it — because
+otherwise it is an open Claude proxy with your key behind it, which is the
+other way to lose a key.
+
+The answer key never reaches the browser either. It is sealed on the way out
+and only the grading call can open it, so a child who finds the network tab
+finds ciphertext. That is a speed bump of the same size as the parent PIN,
+and it does not pretend to be more.
+
+Leave `ANTHROPIC_API_KEY` unset and everything else in the app works exactly
+as it always did.
+
 ## The one list that reports an absence
 
 Everything else in the app reports something that happened. **Still owed** is
@@ -111,16 +173,20 @@ the account's data with it.
 ## Layout
 
 ```
+api/
+  quiz.js         the only server-side code: writes and grades quizzes, and
+                  the only place the Claude API key is ever read
 src/
   lib/
     model.js      kid / activity / completion shapes, weekdays, measures
     stats.js      everything derived, status, streaks, feed, "still owed"
     date.js       local-day keys; nothing is ever bucketed by UTC
     db.js         Supabase reads, writes, and the Realtime subscription
+    quiz.js       the browser's end of api/quiz.js, and nothing else
     icons.jsx     avatar + activity icon sets, stored as short string ids
     sample.js     the demo family, seeded by name so it is reproducible
     storage.js    JSON backup export/import
-  components/     Modal, KidCard, ActivityRow, DayDots, ProgressRing, editors…
+  components/     Modal, KidCard, ActivityRow, DayDots, QuizModal, editors…
   views/          ParentDashboard, KidDetail, FeedView, KidMode, SettingsView
   App.jsx         auth, state, mutations, and the two shells
   styles.css      design tokens + every class in the app
@@ -130,3 +196,8 @@ Only three things are ever stored: a kid, an activity, and a completion. Today's
 status, every streak, the feed, and the "still owed" list are all read back out
 of completion rows at render time. A parent can never be shown a "done" that no
 kid produced.
+
+A quiz does not add a fourth thing. The sentence the kid wrote and the score
+they got ride along on the completion row they earned, so a score cannot
+outlive the check-off it belongs to, and deleting the row in the feed takes
+the score with it.
