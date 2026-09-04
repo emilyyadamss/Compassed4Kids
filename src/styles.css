@@ -1,10 +1,10 @@
 /* ============================================================
-   Compassed for Kids — design tokens
+   Compassed 4 Kids, design tokens
 
    A softer sibling of Compassed's Cairn system. Same bones: one light and one
    dark palette defined as tokens, an ink/bone CTA that swaps with the canvas,
    eight categorical slots that belong to an entity for life. What changes is
-   the temperament — rounded corners instead of square, real shadows instead of
+   the temperament, rounded corners instead of square, real shadows instead of
    flat rules, a rounded display face, and tap targets sized for an eight-year-
    old's thumb rather than a mouse pointer.
 
@@ -243,15 +243,22 @@ a { color: var(--accent); }
 }
 .brand-mark {
   width: 30px; height: 30px;
-  border-radius: 9px;
   display: grid; place-items: center;
   flex: none;
-  background: var(--accent);
-  color: #fff;
+  /* the mark art draws its own rounded frame, so no box here */
+  color: var(--text-primary);
+  --brand-check-shade: #2e6922;
+  --brand-check-face:  #3f8930;
 }
-:root[data-theme="dark"] .brand-mark { color: #17161f; }
+:root[data-theme="dark"] .brand-mark {
+  --brand-check-shade: #4d9b3b;
+  --brand-check-face:  #6cc255;
+}
 @media (prefers-color-scheme: dark) {
-  :root:where(:not([data-theme="light"])) .brand-mark { color: #17161f; }
+  :root:where(:not([data-theme="light"])) .brand-mark {
+    --brand-check-shade: #4d9b3b;
+    --brand-check-face:  #6cc255;
+  }
 }
 .mobile-topbar { display: none; }
 
@@ -301,7 +308,7 @@ a { color: var(--accent); }
 .nav-item .nav-icon { display: grid; place-items: center; flex: none; color: var(--kid-color, inherit); }
 .nav-footer { margin-top: auto; padding-top: 16px; display: grid; gap: 3px; }
 
-/* the unread count on the feed nav item — the one number a parent looks for */
+/* the unread count on the feed nav item, the one number a parent looks for */
 .nav-pill {
   flex: none;
   min-width: 20px;
@@ -733,7 +740,7 @@ textarea.input { height: auto; padding: 10px 13px; resize: vertical; min-height:
 .feed-day:first-child { margin-top: 0; }
 .feed-day .rule { flex: 1; height: 1px; background: var(--border); }
 
-/* the "still open" panel — kept visually distinct from the feed, because it is
+/* the "still open" panel, kept visually distinct from the feed, because it is
    the one place in the app that reports an absence rather than an event */
 .attention {
   border-color: color-mix(in oklab, var(--late) 35%, var(--border));
@@ -981,7 +988,7 @@ textarea.input { height: auto; padding: 10px 13px; resize: vertical; min-height:
   color: var(--accent);
 }
 
-/* the number pad on the check-in modal — kid-sized, and the only way a child
+/* the number pad on the check-in modal, kid-sized, and the only way a child
    ever types a number in this app */
 .stepper { display: flex; align-items: center; gap: 12px; justify-content: center; }
 .stepper .n {
@@ -1238,16 +1245,41 @@ textarea.input { height: auto; padding: 10px 13px; resize: vertical; min-height:
 /* ============================================================ loader */
 
 .loader-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.spinner {
-  width: 44px; height: 44px;
-  border-radius: 999px;
-  border: 4px solid var(--surface-sunken);
-  border-top-color: var(--accent);
-  animation: spin 800ms linear infinite;
+/* The compass loader: a bezel of eight ticks drifting one slow turn while the
+   accent arc sweeps around it. r=72 puts the circumference at 452, so the
+   dasharray pairs below read as fractions of that. */
+.pl { width: 46px; height: 46px; }
+.pl__ring-rotate {
+  transform-box: view-box;
+  transform-origin: 80px 80px;
+  animation: pl-bezel 9s linear infinite;
 }
-@keyframes spin { to { transform: rotate(360deg) } }
+.pl__tick { stroke: var(--border-strong); stroke-width: 6; stroke-linecap: round; }
+.pl__ring-stroke {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transform-box: view-box;
+  transform-origin: 80px 80px;
+  animation: pl-sweep 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes pl-bezel { to { transform: rotate(360deg) } }
+@keyframes pl-sweep {
+  0%   { stroke-dasharray: 16 436; transform: rotate(0deg); }
+  50%  { stroke-dasharray: 260 192; transform: rotate(200deg); }
+  100% { stroke-dasharray: 16 436; transform: rotate(540deg); }
+}
 
-/* An armed feed row stays visible even when the pointer moves off it — the
+/* The global reduce rule only shortens durations, which leaves an infinite
+   animation cycling too fast to read. Stop this one outright and park the arc
+   on a legible quarter turn. */
+@media (prefers-reduced-motion: reduce) {
+  .pl__ring-rotate, .pl__ring-stroke { animation: none; }
+  .pl__ring-stroke { stroke-dasharray: 113 340; }
+}
+
+/* An armed feed row stays visible even when the pointer moves off it, the
    choice is the parent's to finish or cancel, not the mouse's. */
 .feed-row.is-armed { background: color-mix(in oklab, var(--error) 12%, transparent); }
 .feed-row.is-armed .act-del { opacity: 1; }

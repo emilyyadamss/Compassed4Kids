@@ -78,7 +78,7 @@ export default function SettingsView({
             <div className="t">Desktop notifications</div>
             <div className="s">
               {notifyState === 'granted'
-                ? 'On — your browser will pop up each check-off.'
+                ? 'On, your browser will pop up each check-off.'
                 : notifyState === 'denied'
                   ? 'Blocked in your browser settings. Re-allow notifications for this site to turn them on.'
                   : 'Ask your browser for permission to show them.'}
@@ -97,7 +97,7 @@ export default function SettingsView({
           <div className="switch-copy">
             <div className="t">Count today as late after</div>
             <div className="s">
-              Before this hour, an unfinished thing is just unfinished — it stays off the
+              Before this hour, an unfinished thing is just unfinished, it stays off the
               &ldquo;still owed&rdquo; list so the app is not nagging at 3pm.
             </div>
           </div>
@@ -140,7 +140,7 @@ export default function SettingsView({
           </div>
         </div>
         <p className="hint" style={{ marginBottom: 10 }}>
-          A speed bump, not a lock — it keeps a younger sibling out of the settings. Your account
+          A speed bump, not a lock, it keeps a younger sibling out of the settings. Your account
           password is the real boundary.
         </p>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>

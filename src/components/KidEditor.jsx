@@ -88,7 +88,7 @@ export default function KidEditor({ kid, isNew, onSave, onDelete, onClose }) {
           ))}
         </div>
         <p className="hint">
-          This color is how {draft.name.trim() || 'they'} are recognised everywhere in the app — it stays theirs.
+          This color is how {draft.name.trim() || 'they'} are recognised everywhere in the app, it stays theirs.
         </p>
       </div>
 

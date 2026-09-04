@@ -70,7 +70,7 @@ export default function KidDetail({
       {activities.length === 0 ? (
         <div className="empty">
           <h3>{kid.name} has nothing on their list</h3>
-          <p>Add homework, Kumon, reading — whatever you want them checking off, on the days it is due.</p>
+          <p>Add homework, Kumon, reading.. whatever you want them checking off, on the days it is due.</p>
           <button className="btn btn-primary" onClick={() => onNewActivity(kid)}>
             <Plus size={16} /> Add the first one
           </button>

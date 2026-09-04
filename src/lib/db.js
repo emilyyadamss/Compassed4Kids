@@ -84,7 +84,7 @@ export function subscribeToCompletions(userId, { onInsert, onDelete }) {
   return () => { supabase.removeChannel(channel) }
 }
 
-/** Wholesale swap — used by "load a sample family" and "clear everything". */
+/** Wholesale swap, used by "load a sample family" and "clear everything". */
 export async function replaceData(userId, { kids, activities, completions }) {
   orThrow(await supabase.from('completions').delete().eq('user_id', userId))
   orThrow(await supabase.from('activities').delete().eq('user_id', userId))
@@ -106,7 +106,7 @@ export async function replaceData(userId, { kids, activities, completions }) {
   }
 }
 
-/** Full backup restore — also replaces settings. */
+/** Full backup restore, also replaces settings. */
 export async function replaceAll(userId, { kids, activities, completions, settings }) {
   await replaceData(userId, { kids, activities, completions })
   await putSettings(userId, settings)

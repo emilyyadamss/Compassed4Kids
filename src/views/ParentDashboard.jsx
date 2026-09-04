@@ -8,13 +8,18 @@ import { kidDay, kidStreak, bestStreak, needsAttention } from '../lib/stats.js'
 export default function ParentDashboard({
   kids, byKid, byActivity, today, settings, onOpenKid, onToggle, onNewKid,
 }) {
+  /* The Atmosphere Card is the design system's signature surface, and it is
+     load-bearing rather than decorative: this is the one screen in the parent
+     shell with nothing to report, so it is the one place the card earns. */
   if (kids.length === 0) {
     return (
-      <div className="empty">
+      <div className="atmos">
+        <div className="atmos-medallion" aria-hidden="true" />
+        <div className="eyebrow">Nobody on the list</div>
         <h3>No kids yet</h3>
         <p>
           Add a child, give them a color, and put two or three things on their list.
-          Then hand them the tablet — everything they check off shows up here.
+          Then hand them the tablet, everything they check off shows up here.
         </p>
         <button className="btn btn-primary" onClick={onNewKid}>
           <Plus size={16} /> Add a kid
@@ -58,12 +63,13 @@ export default function ParentDashboard({
       </div>
 
       {late.length > 0 && (
-        <div className="card attention" style={{ marginBottom: 18 }}>
-          <div className="card-head" style={{ marginBottom: 8 }}>
+        <div className="card attention" style={{ marginBottom: 24 }}>
+          <div className="card-head" style={{ marginBottom: 12 }}>
             <div>
-              <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <AlertCircle size={17} /> Still owed
+              <div className="eyebrow" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <AlertCircle size={13} /> Outstanding
               </div>
+              <div className="card-title">Still owed</div>
               <div className="card-sub">
                 Yesterday is settled; today only appears here after {formatHour(settings.behindAfterHour)}.
               </div>
@@ -84,10 +90,17 @@ export default function ParentDashboard({
       )}
 
       {best.streak >= 5 && (
-        <div className="card" style={{ marginBottom: 18, display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span className="act-icon" style={{ color: 'var(--good-text)' }}><Flame size={19} /></span>
-          <div>
-            <div className="card-title" style={{ marginBottom: 0 }}>
+        <div
+          className="card"
+          style={{
+            '--kid-color': colorVar(best.kid.colorSlot),
+            marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16,
+          }}
+        >
+          <span className="act-icon" style={{ color: 'var(--kid-color)' }}><Flame size={17} /></span>
+          <div style={{ minWidth: 0 }}>
+            <div className="eyebrow">On a run</div>
+            <div className="card-title">
               {best.kid.name} is on a {best.streak}-day streak
             </div>
             <div className="card-sub">Every single thing on the list, {best.streak} days running.</div>

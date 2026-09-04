@@ -96,7 +96,7 @@ export default function KidMode({ kids, byKid, byActivity, today, onToggle, onEx
           <h1>Hi, {kid.name}!</h1>
           <p>
             {day.nothingDue
-              ? 'Nothing on your list today. Go play.'
+              ? 'Nothing on your list today. Go play!'
               : day.complete
                 ? 'You finished everything today. Nice work!'
                 : 'Here is your list for today.'}
@@ -111,7 +111,7 @@ export default function KidMode({ kids, byKid, byActivity, today, onToggle, onEx
                 {day.complete ? 'All done!' : `${day.total - day.done} left to go`}
               </div>
               <div className="s">
-                {streak > 1 ? `${streak} days in a row — keep it up!` : 'Tap something when you finish it.'}
+                {streak > 1 ? `${streak} days in a row, keep it up!` : 'Tap something when you finish it.'}
               </div>
             </div>
           </div>
@@ -121,7 +121,7 @@ export default function KidMode({ kids, byKid, byActivity, today, onToggle, onEx
           const measure = measureFor(activity)
           const sub = status.done
             ? status.amount > 0 && measure.many
-              ? `${status.amount} ${measureWord(status.amount, measure)} — done!`
+              ? `${status.amount} ${measureWord(status.amount, measure)}, done!`
               : 'Done!'
             : activity.target > 0 && measure.many
               ? `${activity.target} ${measure.many}`

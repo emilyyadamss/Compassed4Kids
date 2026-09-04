@@ -1,0 +1,731 @@
+/* ============================================================
+   Penumbra, applied to the parent shell
+
+   DESIGN.md describes a quiet editorial dark system: one onyx canvas, three
+   surface tiers six percent apart, hairline borders at 1px and never more, a
+   single warm-white accent, and Instrument Serif sitting above Inter. This
+   file puts that system on the grown-up side of the app only — everything
+   under `.app`. Kid mode, the landing page and the auth screens keep the
+   playful Compassed palette, because Penumbra's restraint is not aimed at an
+   eight-year-old.
+
+   Two deliberate departures from the spec, both asked for:
+
+   1. A light twin. Penumbra ships dark only, but this app has a theme toggle
+      a parent already set, so the tiers are inverted into a warm paper
+      equivalent — surface steps of the same size, the same hairlines, and the
+      accent flipped from warm-white-on-onyx to onyx-on-paper. The dark values
+      below are the spec's own hexes, unaltered.
+
+   2. The eight kid colors survive. Penumbra has no chromatic accent by
+      design, so the kid colors are demoted to identity marks only: an avatar
+      glyph, a meter fill, a name. They never fill a surface, never carry a
+      border, and never stand in for the accent.
+
+   Everything is written as an override of the token names in styles.css, so
+   the rules already there re-skin themselves and only the shapes Penumbra
+   specifies differently are restated.
+   ============================================================ */
+
+.app {
+  /* ---- surfaces: the dark tiers inverted onto warm paper ---- */
+  --page:           #faf9f7;
+  --surface-1:      #ffffff;
+  --surface-2:      #f2f1ee;   /* raised: hover and menu ground */
+  --surface-sunken: #efeeea;   /* inset: inputs, code, recessed regions */
+  --text-primary:   #17171a;
+  --text-secondary: #5c6068;
+  --text-muted:     #7c808a;
+  --border:         #e4e3dd;
+  --border-strong:  #cbcac2;
+
+  /* Penumbra is flat. Cards lift with a surface step and a hairline, not a
+     shadow, so every shadow token but the floating one is switched off. */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 8px 30px rgba(23, 23, 26, 0.16);
+  --shadow-pill: none;
+
+  /* The one accent. On paper it is ink; in the dark twin below it is the
+     spec's warm white. Nothing else in the parent shell carries color. */
+  --accent:      #1b1b21;
+  --accent-tint: #edece7;
+  --accent-ring: #1b1b21;
+  --cta-bg:      #1b1b21;
+  --cta-text:    #f4f4f5;
+  --cta-hover:   #08080a;
+
+  --error:      #b4423f;
+  --error-text: #b4423f;
+  --late:       #b4423f;
+  --late-text:  #b4423f;
+  --good:       #17171a;
+  --good-text:  #17171a;
+
+  /* radius scale: 2 / 6 / 10 / 14 / 999 */
+  --radius-sm:   2px;
+  --radius:      6px;
+  --radius-lg:   10px;
+  --radius-xl:   14px;
+  --radius-pill: 999px;
+
+  --font:         'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Instrument Serif', 'Cormorant Garamond', Georgia, serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --hairline: 1px solid var(--border);
+  --glow: 0 0 0 6px rgba(27, 27, 33, 0.08);
+  --inset-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+  font-family: var(--font);
+  background: var(--page);
+  color: var(--text-primary);
+}
+
+/* The dark values are Penumbra as written. Declared twice, once for the system
+   preference and once for an explicit choice, so the in-app toggle wins in
+   both directions — the same pattern styles.css already uses. */
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) .app {
+    --page:           #08080a;
+    --surface-1:      #101013;
+    --surface-2:      #1b1b21;
+    --surface-sunken: #17171c;
+    --text-primary:   #f4f4f5;
+    --text-secondary: #9ba0ab;
+    --text-muted:     #5c6068;
+    --border:         #23232a;
+    --border-strong:  #2e2e36;
+
+    --shadow-lg: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 8px 30px rgba(0, 0, 0, 0.45);
+
+    --accent:      #e8e5dc;
+    --accent-tint: #23232a;
+    --accent-ring: #e8e5dc;
+    --cta-bg:      #e8e5dc;
+    --cta-text:    #08080a;
+    --cta-hover:   #ffffff;
+
+    --error:      #e47c7c;
+    --error-text: #e47c7c;
+    --late:       #e47c7c;
+    --late-text:  #e47c7c;
+    --good:       #f4f4f5;
+    --good-text:  #f4f4f5;
+
+    --glow: 0 0 0 6px rgba(232, 229, 220, 0.08);
+    --inset-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+}
+
+:root[data-theme="dark"] .app {
+  --page:           #08080a;
+  --surface-1:      #101013;
+  --surface-2:      #1b1b21;
+  --surface-sunken: #17171c;
+  --text-primary:   #f4f4f5;
+  --text-secondary: #9ba0ab;
+  --text-muted:     #5c6068;
+  --border:         #23232a;
+  --border-strong:  #2e2e36;
+
+  --shadow-lg: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 8px 30px rgba(0, 0, 0, 0.45);
+
+  --accent:      #e8e5dc;
+  --accent-tint: #23232a;
+  --accent-ring: #e8e5dc;
+  --cta-bg:      #e8e5dc;
+  --cta-text:    #08080a;
+  --cta-hover:   #ffffff;
+
+  --error:      #e47c7c;
+  --error-text: #e47c7c;
+  --late:       #e47c7c;
+  --late-text:  #e47c7c;
+  --good:       #f4f4f5;
+  --good-text:  #f4f4f5;
+
+  --glow: 0 0 0 6px rgba(232, 229, 220, 0.08);
+  --inset-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* The body keeps the Compassed page color for the kid and landing shells, so
+   the parent shell restates its own — otherwise a rubber-band overscroll on
+   macOS flashes lavender behind the onyx. */
+:root:has(.app) body { background: #faf9f7; }
+:root[data-theme="dark"]:has(.app) body { background: #08080a; }
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])):has(.app) body { background: #08080a; }
+}
+
+/* ============================================================ type */
+
+/* Instrument Serif ships in one weight. Anything that asked the old rounded
+   display face for 600 or 700 has to come back to 400 or the browser will
+   synthesise a bold and lose the whole point of the face. */
+.app h1, .app h2, .app h3, .app h4,
+.app .page-title, .app .card-title, .app .modal-title,
+.app .kid-name, .app .stat .v, .app .stepper .n, .app .pin-pad button {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+.app { font-size: 15px; line-height: 1.55; }
+
+/* eyebrow: uppercase Inter at 0.16em, the one label style above headlines
+   and atop cards */
+.app .eyebrow,
+.app .nav-label,
+.app .stat .k,
+.app .feed-day,
+.app .field > label,
+.app .label {
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.app .eyebrow { margin-bottom: 10px; }
+.app .field > label, .app .label { color: var(--text-secondary); }
+
+.app .page-head { margin-bottom: 40px; align-items: flex-end; }
+.app .page-title { font-size: 40px; line-height: 1.1; letter-spacing: -0.01em; }
+.app .page-sub { font-size: 15px; line-height: 1.55; color: var(--text-secondary); margin-top: 6px; }
+
+.app .card-title { font-size: 20px; letter-spacing: -0.01em; }
+.app .card-sub { font-size: 13px; line-height: 1.5; color: var(--text-secondary); margin-top: 3px; }
+.app .hint { font-size: 13px; color: var(--text-muted); }
+
+/* 1.5px outline icons in currentColor, per the spec's Lucide rule. The two
+   check glyphs keep a heavier stroke: a tick is a mark, not an outline. */
+.app svg { stroke-width: 1.5; }
+.app .act-check svg, .app .toggle svg { stroke-width: 2.25; }
+
+.app :focus-visible {
+  outline: 1px solid var(--accent-ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ============================================================ shell */
+
+.app .sidebar {
+  background: var(--page);
+  border-right: var(--hairline);
+  padding: 24px 12px 16px;
+  gap: 2px;
+}
+
+.app .brand {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 21px;
+  letter-spacing: -0.01em;
+  padding: 0 8px 32px;
+}
+:root .app .brand-mark {
+  width: 28px; height: 28px;
+  background: transparent;
+  border: 0;
+  color: var(--text-primary);
+}
+
+.app .nav-label { padding: 28px 8px 8px; }
+
+.app .nav-item {
+  border-radius: var(--radius);
+  padding: 8px 8px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+}
+.app .nav-item:hover { background: var(--surface-2); color: var(--text-primary); }
+.app .nav-item[aria-current="true"] {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+.app .nav-item .nav-meta { font-size: 12px; letter-spacing: 0; }
+.app .nav-footer { padding-top: 24px; gap: 2px; }
+
+:root .app .nav-pill {
+  background: var(--cta-bg);
+  color: var(--cta-text);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.app .main { padding: 40px 40px 96px; max-width: 1120px; }
+
+.app .stack { gap: 16px; }
+
+/* ============================================================ primitives */
+
+.app .card {
+  background: var(--surface-1);
+  border: var(--hairline);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: none;
+}
+.app .card-head { margin-bottom: 16px; }
+
+/* button: pill, 40px, one accent. Primary carries the warm-white (or ink)
+   fill and the faint top-edge lip; hover adds the accent ring at 8%. */
+.app .btn {
+  height: 40px;
+  padding: 0 18px;
+  gap: 8px;
+  border: var(--hairline);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+}
+.app .btn:hover { background: var(--surface-1); border-color: var(--border-strong); }
+.app .btn:active { transform: none; }
+.app .btn-primary {
+  background: var(--cta-bg);
+  color: var(--cta-text);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: var(--inset-highlight);
+}
+.app .btn-primary:hover {
+  background: var(--cta-hover);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: var(--inset-highlight), var(--glow);
+}
+.app .btn-ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  height: 36px;
+  padding: 0 14px;
+}
+.app .btn-ghost:hover { background: var(--surface-2); color: var(--text-primary); }
+.app .btn-sm { height: 32px; padding: 0 14px; font-size: 11px; }
+.app .btn-icon { width: 40px; padding: 0; }
+.app .btn-sm.btn-icon { width: 32px; }
+.app .btn-danger { color: var(--error-text); }
+.app .btn-danger:hover {
+  background: transparent;
+  border-color: var(--error);
+  color: var(--error-text);
+}
+
+/* segmented control: 6px radius, hairline, inset ground */
+.app .seg {
+  padding: 3px;
+  background: var(--surface-sunken);
+  border: var(--hairline);
+  border-radius: var(--radius);
+}
+.app .seg button {
+  border-radius: 3px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text-secondary);
+}
+.app .seg button[aria-pressed="true"] { background: var(--cta-bg); color: var(--cta-text); }
+
+/* input: 40px, 6px radius, slate fill, hairline that the focus ring replaces */
+.app .input, .app select.input, .app textarea.input {
+  height: 40px;
+  padding: 0 14px;
+  border: var(--hairline);
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  font-size: 15px;
+}
+.app textarea.input { height: auto; padding: 11px 14px; min-height: 72px; line-height: 1.55; }
+.app .input:focus, .app textarea.input:focus, .app select.input:focus {
+  border-color: var(--accent-ring);
+  box-shadow: var(--glow);
+}
+
+/* chips carry a kid's color as text on an inset ground, never as a fill */
+.app .chip {
+  height: 24px;
+  padding: 0 10px;
+  background: var(--surface-sunken);
+  border: var(--hairline);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--kid-color, var(--text-secondary));
+}
+.app .chip-good { background: var(--surface-sunken); color: var(--text-primary); }
+.app .chip-late { background: var(--surface-sunken); color: var(--error-text); }
+
+.app .chip-btn {
+  height: 34px;
+  padding: 0 14px;
+  background: transparent;
+  border: var(--hairline);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text-secondary);
+}
+.app .chip-btn:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.app .chip-btn:active { transform: none; }
+.app .chip-btn[aria-pressed="true"] { background: var(--cta-bg); border-color: transparent; color: var(--cta-text); }
+
+.app .day-toggle {
+  width: 36px; height: 36px;
+  border: var(--hairline);
+  border-radius: var(--radius);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+.app .day-toggle:active { transform: none; }
+:root .app .day-toggle[aria-pressed="true"] {
+  background: var(--cta-bg);
+  border-color: transparent;
+  color: var(--cta-text);
+}
+
+.app .empty { padding: 72px 24px; color: var(--text-secondary); }
+.app .empty h3 { font-size: 28px; font-weight: 400; margin-bottom: 10px; }
+.app .empty p { font-size: 15px; line-height: 1.55; margin-bottom: 24px; }
+
+/* ============================================================ atmosphere */
+
+/* The signature surface: a concentric dot medallion behind a soft vignette.
+   Load-bearing, not decoration — it appears once, on the dashboard's empty
+   state, and nowhere else in the parent shell. */
+.app .atmos {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  background: var(--surface-1);
+  background-image: radial-gradient(120% 80% at 50% -10%, var(--surface-2), transparent 70%);
+  border: var(--hairline);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--inset-highlight);
+  padding: 56px 32px 48px;
+}
+.app .atmos-medallion {
+  width: 148px;
+  height: 148px;
+  margin: 0 auto 28px;
+  color: var(--text-muted);
+  background-image: radial-gradient(currentColor 1px, transparent 1.2px);
+  background-size: 9px 9px;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 8%, rgba(0, 0, 0, 0.5) 40%, transparent 70%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 8%, rgba(0, 0, 0, 0.5) 40%, transparent 70%);
+}
+.app .atmos h3 {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
+}
+.app .atmos p {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  max-width: 46ch;
+  margin: 0 auto 28px;
+}
+
+/* ============================================================ stat tiles */
+
+.app .kpi-row { gap: 1px; margin-bottom: 32px; background: var(--border); border: var(--hairline); border-radius: var(--radius-lg); overflow: hidden; }
+.app .stat {
+  background: var(--surface-1);
+  border: none;
+  border-radius: 0;
+  padding: 20px 24px;
+  box-shadow: none;
+}
+.app .stat .v {
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin-top: 10px;
+}
+.app .stat .v small {
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+.app .stat .d { font-size: 13px; color: var(--text-secondary); margin-top: 6px; }
+.app .stat .d.up { color: var(--text-primary); font-weight: 400; }
+
+/* ============================================================ kid card */
+
+.app .kid-grid { gap: 16px; }
+
+.app .kid-card {
+  background: var(--surface-1);
+  border: var(--hairline);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  gap: 20px;
+  box-shadow: none;
+}
+.app .kid-card:hover { border-color: var(--border-strong); box-shadow: none; }
+
+/* the avatar is where a kid's color lives now: a glyph on an inset square,
+   not a tinted fill */
+.app .kid-avatar {
+  width: 40px; height: 40px;
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  border: var(--hairline);
+  color: var(--kid-color, var(--text-secondary));
+}
+.app .kid-avatar.lg { width: 56px; height: 56px; border-radius: var(--radius-lg); }
+.app .kid-name { font-size: 22px; letter-spacing: -0.01em; }
+.app .kid-meta { font-size: 13px; color: var(--text-secondary); }
+.app .kid-score .n { font-size: 18px; font-weight: 400; }
+.app .kid-score .u {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.app .meter { height: 3px; border-radius: 0; background: var(--surface-sunken); }
+.app .meter > i { border-radius: 0; background: var(--kid-color, var(--accent)); }
+.app .meter-row {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+/* ============================================================ activity row */
+
+.app .act-row { gap: 14px; padding: 12px 0; border-bottom: var(--hairline); }
+
+/* Penumbra's checkbox is a 16px square at 2px radius. It is opened up to 20px
+   here because this row is a real tap target on a phone, and it inverts to
+   the accent rather than to the kid color — the fill is the accent's job. */
+.app .act-check {
+  width: 20px; height: 20px;
+  border-radius: var(--radius-sm);
+  border: var(--hairline);
+  background: var(--surface-sunken);
+  color: transparent;
+}
+.app .act-check:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  color: var(--text-muted);
+}
+.app .act-check:active:not(:disabled) { transform: none; }
+.app .act-check[aria-checked="true"] {
+  background: var(--cta-bg);
+  border-color: var(--cta-bg);
+  color: var(--cta-text);
+}
+/* ActivityRow asks for a 17px tick, which was sized for the old 30px box */
+.app .act-check svg { width: 12px; height: 12px; }
+
+.app .act-icon {
+  width: 32px; height: 32px;
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  border: var(--hairline);
+  color: var(--text-secondary);
+}
+.app .act-name { font-size: 15px; font-weight: 400; }
+.app .act-meta { font-size: 13px; color: var(--text-muted); }
+.app .act-row.is-done .act-name { color: var(--text-muted); }
+
+/* ============================================================ day dots */
+
+.app .dot-day {
+  width: 20px; height: 20px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+  border: var(--hairline);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.app .dot-day.is-done {
+  background: var(--kid-color, var(--accent));
+  border-color: transparent;
+  color: var(--cta-text);
+}
+.app .dot-day.is-missed { background: transparent; border: 1px solid var(--error); color: var(--error-text); }
+.app .dot-day.is-open { background: transparent; border: 1px dashed var(--border-strong); color: var(--text-muted); }
+
+/* ============================================================ feed */
+
+.app .feed-row { padding: 12px; border-radius: var(--radius); border: 1px solid transparent; gap: 14px; }
+.app .feed-row.is-unread { background: var(--surface-sunken); border-color: var(--border); }
+.app .feed-dot { width: 5px; height: 5px; background: var(--accent); }
+.app .feed-dot.is-read { background: transparent; }
+.app .feed-line { font-size: 15px; }
+.app .feed-line b { font-weight: 500; color: var(--kid-color, var(--text-primary)); }
+.app .feed-when { font-size: 12px; letter-spacing: 0; }
+.app .feed-day { margin: 32px 0 10px; }
+.app .feed-day .rule { background: var(--border); }
+.app .feed-row.is-armed { background: var(--surface-sunken); border-color: var(--error); }
+
+/* ============================================================ attention */
+
+/* Penumbra reserves the error hue for inline validation, so the panel that
+   reports what is still owed states it in type and a stronger hairline
+   instead of a red wash. The only red left is the timestamp itself. */
+.app .attention {
+  background: var(--surface-1);
+  border: 1px solid var(--border-strong);
+}
+.app .attention-row { padding: 12px 0; border-bottom: var(--hairline); font-size: 15px; }
+.app .attention-row .who { font-weight: 500; color: var(--kid-color, var(--text-primary)); }
+.app .attention-row .when {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--error-text);
+}
+
+/* ============================================================ modal */
+
+.app .overlay { background: rgba(8, 8, 10, 0.55); padding: 24px; }
+.app .modal {
+  background: var(--surface-1);
+  border: var(--hairline);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+.app .modal-head { padding: 24px 24px 12px; }
+.app .modal-title { font-size: 28px; letter-spacing: -0.01em; }
+.app .modal-body { padding: 8px 24px 20px; gap: 20px; }
+.app .modal-foot {
+  padding: 16px 24px;
+  border-top: var(--hairline);
+  background: var(--surface-1);
+}
+
+.app .swatch-picker button { width: 28px; height: 28px; border-radius: var(--radius); }
+.app .swatch-picker button:hover { transform: none; }
+.app .swatch-picker button[aria-pressed="true"] {
+  box-shadow: 0 0 0 1px var(--surface-1), 0 0 0 2px var(--sw);
+}
+
+.app .icon-picker button {
+  width: 40px; height: 40px;
+  border-radius: var(--radius);
+  border: var(--hairline);
+  background: var(--surface-sunken);
+  color: var(--text-secondary);
+}
+.app .icon-picker button:hover { transform: none; border-color: var(--border-strong); color: var(--text-primary); }
+.app .icon-picker button[aria-pressed="true"] {
+  background: var(--cta-bg);
+  border-color: transparent;
+  color: var(--cta-text);
+}
+
+.app .stepper .n { font-size: 56px; font-weight: 400; }
+.app .stepper button {
+  width: 48px; height: 48px;
+  border: var(--hairline);
+  background: transparent;
+}
+.app .stepper button:hover { border-color: var(--border-strong); background: var(--surface-2); }
+.app .stepper button:active { transform: none; }
+
+.app .pin-pad button {
+  height: 56px;
+  border: var(--hairline);
+  border-radius: var(--radius);
+  background: transparent;
+  font-size: 24px;
+  font-weight: 400;
+}
+.app .pin-pad button:hover { background: var(--surface-2); }
+.app .pin-pad button:active { transform: none; }
+.app .pin-dots i { width: 10px; height: 10px; border: var(--hairline); border-color: var(--border-strong); }
+.app .pin-dots i.on { background: var(--accent); border-color: transparent; }
+
+/* ============================================================ switch */
+
+.app .switch { padding: 16px 0; border-bottom: var(--hairline); }
+.app .switch-copy .t { font-size: 15px; font-weight: 500; }
+.app .switch-copy .s { font-size: 13px; color: var(--text-secondary); margin-top: 3px; }
+.app .toggle {
+  width: 40px; height: 22px;
+  background: var(--surface-sunken);
+  border: var(--hairline);
+  border-color: var(--border-strong);
+}
+.app .toggle::after {
+  top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  background: var(--text-secondary);
+}
+.app .toggle[aria-pressed="true"] { background: var(--cta-bg); border-color: transparent; }
+.app .toggle[aria-pressed="true"]::after { transform: translateX(18px); background: var(--cta-text); }
+
+/* ============================================================ toast */
+
+.app .toast {
+  background: var(--cta-bg);
+  color: var(--cta-text);
+  padding: 11px 18px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  box-shadow: var(--shadow-lg);
+}
+
+/* ============================================================ mobile */
+
+@media (max-width: 900px) {
+  .app .main { padding: 24px 24px 100px; }
+  .app .page-head { margin-bottom: 28px; }
+  .app .page-title { font-size: 32px; }
+  .app .atmos h3, .app .empty h3 { font-size: 28px; }
+  .app .card, .app .kid-card { padding: 20px; }
+  .app .stat { padding: 18px 20px; }
+  .app .stat .v { font-size: 32px; }
+  .app .mobile-topbar {
+    background: var(--page);
+    border-bottom: var(--hairline);
+    padding: 14px 24px;
+  }
+  .app .mobile-fab-trigger {
+    width: 52px; height: 52px;
+    background: var(--cta-bg);
+    color: var(--cta-text);
+    box-shadow: var(--shadow-lg);
+  }
+  .app .mobile-fab-item {
+    background: var(--surface-1);
+    border: var(--hairline);
+    border-radius: var(--radius-pill);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    box-shadow: var(--shadow-lg);
+  }
+  .app .mobile-fab-item[aria-current="true"] { background: var(--cta-bg); border-color: transparent; color: var(--cta-text); }
+  .app .mobile-fab-item em { font-size: 11px; letter-spacing: 0; }
+  .app .mobile-fab-backdrop { background: rgba(8, 8, 10, 0.4); }
+}

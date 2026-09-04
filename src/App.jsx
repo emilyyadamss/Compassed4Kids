@@ -30,7 +30,7 @@ import {
 import {
   indexCompletions, daysFor, kidDay, buildFeed, unreadCount, completionLine,
 } from './lib/stats.js'
-import { todayKey } from './lib/date.js'
+import { todayKey, formatLong } from './lib/date.js'
 
 const EMPTY_STATE = { kids: [], activities: [], completions: [], settings: { ...DEFAULT_SETTINGS } }
 
@@ -140,7 +140,7 @@ export default function App() {
     toast(line)
     if (typeof Notification !== 'undefined' && Notification.permission === 'granted' && document.hidden) {
       try {
-        new Notification('Compassed for Kids', { body: line, tag: completion.id })
+        new Notification('Compassed 4 Kids', { body: line, tag: completion.id })
       } catch {
         // Some browsers only allow notifications from a service worker; the
         // toast above already carried the news, so this is not worth surfacing.
@@ -165,7 +165,7 @@ export default function App() {
   )
 
   /* The feed marks itself read on arrival, but renders against the stamp from
-     *before* this visit — so a parent can still see which rows were new. */
+     *before* this visit, so a parent can still see which rows were new. */
   const feedSnapshot = useRef(null)
   useEffect(() => {
     if (view.name !== 'feed') { feedSnapshot.current = null; return }
@@ -259,7 +259,7 @@ export default function App() {
     const completion = newCompletion(activity.kidId, activity.id, today, amount)
     ownWrites.current.add(completion.id)
     setState((s) => ({ ...s, completions: [...s.completions, completion] }))
-    putCompletion(userId, completion).catch(syncFail('Could not save that — it may not have reached your phone'))
+    putCompletion(userId, completion).catch(syncFail('Could not save that. It may not have reached your phone'))
     setCheckingIn(null)
 
     const day = kidDay(byKid.get(activity.kidId) || [], byActivity, today)
@@ -499,6 +499,7 @@ export default function App() {
             {kids.length > 0 && (
               <div className="page-head">
                 <div>
+                  <div className="eyebrow">{formatLong(today)}</div>
                   <h1 className="page-title">Today</h1>
                   <p className="page-sub">
                     Everything your kids check off lands here the moment they tap it.
@@ -550,6 +551,7 @@ export default function App() {
           <>
             <div className="page-head">
               <div>
+                <div className="eyebrow">The record</div>
                 <h1 className="page-title">Activity</h1>
                 <p className="page-sub">
                   Every check-off, newest first. Checked something by mistake? Take it back out here.
@@ -564,6 +566,7 @@ export default function App() {
           <>
             <div className="page-head">
               <div>
+                <div className="eyebrow">Preferences</div>
                 <h1 className="page-title">Settings</h1>
                 <p className="page-sub">How you get told, and who can change what.</p>
               </div>

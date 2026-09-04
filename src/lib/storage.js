@@ -7,7 +7,7 @@ import { DEFAULT_SETTINGS, migrateKid, migrateActivity } from './model.js'
 
 export function exportJSON(state) {
   return JSON.stringify(
-    { app: 'Compassed for Kids', version: 1, exportedAt: new Date().toISOString(), ...state },
+    { app: 'Compassed 4 Kids', version: 1, exportedAt: new Date().toISOString(), ...state },
     null,
     2,
   )

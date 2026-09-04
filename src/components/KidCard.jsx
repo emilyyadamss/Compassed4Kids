@@ -46,7 +46,7 @@ export default function KidCard({ kid, day, streak, onOpen, onToggle }) {
       )}
 
       {day.nothingDue ? (
-        <p className="hint">A free day — nothing is scheduled for {kid.name} today.</p>
+        <p className="hint">A free day! Nothing is scheduled for {kid.name} today.</p>
       ) : (
         <div>
           {day.items.map(({ activity, status }) => (
