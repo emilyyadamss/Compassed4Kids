@@ -228,7 +228,7 @@ export default function ActivityEditor({ activity, kid, isNew, onSave, onDelete,
             <button
               className="toggle"
               role="switch"
-              aria-checked={draft.quiz === true}
+              aria-pressed={draft.quiz === true}
               aria-label="Ask questions afterwards"
               onClick={() => set({ quiz: !draft.quiz })}
             />
@@ -370,7 +370,7 @@ export default function ActivityEditor({ activity, kid, isNew, onSave, onDelete,
               <button
                 className="toggle"
                 role="switch"
-                aria-checked={draft.questionsOnly === true}
+                aria-pressed={draft.questionsOnly === true}
                 aria-label="Ask only my questions"
                 onClick={() => set({ questionsOnly: !draft.questionsOnly })}
               />
