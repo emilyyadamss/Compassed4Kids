@@ -140,7 +140,7 @@ export default function SettingsView({
           <button
             className="toggle"
             role="switch"
-            aria-checked={settings.celebrate}
+            aria-pressed={settings.celebrate}
             aria-label="Celebrate a finished day"
             onClick={() => setSettings({ celebrate: !settings.celebrate })}
           />
@@ -172,7 +172,7 @@ export default function SettingsView({
           <button
             className="toggle"
             role="switch"
-            aria-checked={settings.quizzes !== false}
+            aria-pressed={settings.quizzes !== false}
             aria-label="Ask questions after a goal"
             onClick={() => setSettings({ quizzes: settings.quizzes === false })}
           />

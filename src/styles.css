@@ -1504,13 +1504,16 @@ textarea.quiz-input {
 .quiz-score .n small { font-size: 19px; color: var(--text-secondary); font-weight: 600; }
 .quiz-score .s { font-size: 14px; color: var(--text-secondary); font-weight: 600; margin-top: 2px; }
 
-/* One block per question they missed. The right answer is always shown last
-   and in the affirmative colour, so the thing a child reads last is the thing
-   we want them to keep. */
+/* One block per question. In the quiz itself this only ever holds the ones
+   they missed, the right answer always shown last and in the affirmative
+   colour so the thing a child reads last is the thing we want them to keep.
+   In the feed, where a parent sees the entire test, the ones they got right
+   are dimmed so the ones worth a conversation still stand out. */
 .quiz-review {
   padding: 12px 0;
   border-top: 1px solid var(--border);
 }
+.quiz-review.is-correct { opacity: 0.55; }
 .quiz-review .q { font-size: 14.5px; font-weight: 700; margin-bottom: 6px; }
 .quiz-review .a {
   display: flex;

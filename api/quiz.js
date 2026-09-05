@@ -28,12 +28,13 @@ import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from 'node:
 
 const MODEL = 'claude-opus-5'
 
-/* How long a quiz is. Claude is told exactly how many to write and we hold it
-   to it below — a nine-question quiz scored out of ten would be a lie.
-
-   It is a target rather than a constant now: a parent who writes four of their
-   own leaves six for Claude, and one who writes all ten leaves none. */
-const QUESTION_COUNT = 10
+/* How long a quiz can be. Claude is told exactly how many to write and we
+   hold it to it below — a nine-question quiz scored out of ten would be a
+   lie. The parent picks five or ten per activity (`body.total`, checked
+   against this list below); a parent who writes four of their own leaves the
+   rest for Claude, and one who writes the whole thing leaves none. */
+const QUIZ_LENGTHS = [5, 10]
+const MAX_QUESTIONS = 10
 
 /* Writing ten multiple-choice questions from a paragraph is a small, fully
    specified job, and a child is watching a spinner while it happens. Low
@@ -235,7 +236,7 @@ const clean = (v, max) => String(v ?? '').trim().slice(0, max)
 function ownQuestions(list) {
   if (!Array.isArray(list)) return []
   return list
-    .slice(0, QUESTION_COUNT)
+    .slice(0, MAX_QUESTIONS)
     .map((q) => ({
       question: clean(q?.question, 300),
       options: (Array.isArray(q?.options) ? q.options : []).slice(0, 4).map((o) => clean(o, 200)),
@@ -327,11 +328,15 @@ async function writeQuestions({ want, own, note, activity, body }) {
 
 async function generate(body) {
   const activity = clean(body.activity, 120) || 'their work'
-  const own = ownQuestions(body.questions)
+  const total = QUIZ_LENGTHS.includes(Number(body.total)) ? Number(body.total) : MAX_QUESTIONS
+  /* If the parent switched to a shorter quiz after writing more questions
+     than it now holds, the extras were never sent to be asked — only the
+     first `total` of theirs are. */
+  const own = ownQuestions(body.questions).slice(0, total)
 
   /* The parent's questions are asked first, word for word, and Claude fills
-     the rest of the ten. `only` is the override: ask mine and nothing else. */
-  const want = body.only === true && own.length ? 0 : QUESTION_COUNT - own.length
+     the rest of the quiz. `only` is the override: ask mine and nothing else. */
+  const want = body.only === true && own.length ? 0 : total - own.length
   if (want <= 0) return sealedQuiz(own)
 
   const note = clean(body.note, 2000)

@@ -103,16 +103,28 @@ export default function FeedView({ feed, onDelete }) {
                   )}
                 </div>
 
-                {/* The part of the score that is actually useful: what they
-                    said they did, and the questions they got wrong. A number
-                    on its own tells a parent something is off but not what to
-                    sit down and go over. */}
+                {/* What they said they did, and the entire test — not just
+                    what they got wrong, so a parent can see the whole thing
+                    their kid was asked rather than take the score on faith.
+                    Older rows only ever kept the missed ones; those still
+                    render, just without the questions answered right. */}
                 {isOpen && (
                   <div className="quiz-detail" style={{ '--kid-color': colorVar(kid?.colorSlot) }}>
                     {completion.note && (
                       <p className="quiz-echo">&ldquo;{completion.note}&rdquo;</p>
                     )}
-                    {completion.quiz.missed?.length ? (
+                    {completion.quiz.questions?.length ? (
+                      completion.quiz.questions.map((q, i) => (
+                        <div className={`quiz-review${q.correct ? ' is-correct' : ''}`} key={i}>
+                          <div className="q">{q.question}</div>
+                          {!q.correct && q.chose && (
+                            <div className="a wrong">Said: {q.chose}</div>
+                          )}
+                          <div className="a right">Answer: {q.answer}</div>
+                          {q.because && <div className="why">{q.because}</div>}
+                        </div>
+                      ))
+                    ) : completion.quiz.missed?.length ? (
                       completion.quiz.missed.map((m, i) => (
                         <div className="quiz-review" key={i}>
                           <div className="q">{m.question}</div>

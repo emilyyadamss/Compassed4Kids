@@ -234,15 +234,15 @@ export const isQuizzed = (activity, settings = {}) =>
 
 /* ------------------------------------------------- the parent's own questions
 
-   A quiz is ten questions. By default Claude writes all ten from what the kid
-   typed, which is the only way to ask about a chapter nobody has read yet.
-   But a parent often knows exactly what they want asked — this week's spelling
-   list, the seven times table, the three vocabulary words that keep coming
-   back wrong — and no amount of describing that to a model beats writing the
-   question out.
+   A quiz is five or ten questions, the parent's choice per activity. By
+   default Claude writes all of them from what the kid typed, which is the
+   only way to ask about a chapter nobody has read yet. But a parent often
+   knows exactly what they want asked — this week's spelling list, the seven
+   times table, the three vocabulary words that keep coming back wrong — and
+   no amount of describing that to a model beats writing the question out.
 
    So a parent can write their own. Theirs are asked first, always, word for
-   word. Claude fills the rest of the ten, unless `questionsOnly` says not to
+   word. Claude fills the rest of the quiz, unless `questionsOnly` says not to
    bother — that is the override: ask mine and nothing else.
 
    These live on the activity in plain form, answer index included, which does
@@ -254,15 +254,24 @@ export const isQuizzed = (activity, settings = {}) =>
 
 export const QUIZ_QUESTIONS = 10
 
+/** The lengths a parent can choose between, shortest first. */
+export const QUIZ_LENGTHS = [5, 10]
+
+/** How long this activity's quiz is. Five is the only alternative to the
+    default, so anything else on the row (unset, or an old activity from
+    before this was a choice) falls back to ten. */
+export const quizLength = (activity) =>
+  activity?.quizLength === 5 ? 5 : QUIZ_QUESTIONS
+
 export function newQuizQuestion() {
   return { id: crypto.randomUUID(), question: '', options: ['', '', '', ''], answer: 0, because: '' }
 }
 
 /** Always four options and an answer that points at one of them, whatever was
     in the row. A question that came back malformed renders as a broken quiz. */
-export function normaliseQuestions(list) {
+export function normaliseQuestions(list, max = QUIZ_QUESTIONS) {
   if (!Array.isArray(list)) return []
-  return list.slice(0, QUIZ_QUESTIONS).map((q) => {
+  return list.slice(0, max).map((q) => {
     const options = Array.from({ length: 4 }, (_, i) => String(q?.options?.[i] ?? '').trim())
     const answer = Number(q?.answer)
     return {
@@ -295,7 +304,7 @@ export const ownQuestions = (activity) =>
 export function generatedCount(activity) {
   const own = ownQuestions(activity).length
   if (own > 0 && activity?.questionsOnly === true) return 0
-  return Math.max(0, QUIZ_QUESTIONS - own)
+  return Math.max(0, quizLength(activity) - own)
 }
 
 /** Does this quiz need the kid to say what they did? Only if something is

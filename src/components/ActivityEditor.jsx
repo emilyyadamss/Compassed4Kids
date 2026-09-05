@@ -4,7 +4,7 @@ import { ActivityIcon, ACTIVITY_ICON_CHOICES } from '../lib/icons.jsx'
 import { Sparkles, Plus, Trash2 } from 'lucide-react'
 import {
   MEASURES, ACTIVITY_TEMPLATES, EVERY_DAY, SCHOOL_DAYS, WEEKENDS,
-  QUIZ_QUESTIONS, normaliseDays, measureFor, colorVar,
+  QUIZ_LENGTHS, quizLength, normaliseDays, measureFor, colorVar,
   newQuizQuestion, normaliseQuestions, isCompleteQuestion, isStartedQuestion,
 } from '../lib/model.js'
 import { DAY_INITIALS, DAY_NAMES } from '../lib/date.js'
@@ -31,12 +31,17 @@ export default function ActivityEditor({ activity, kid, isNew, onSave, onDelete,
 
   /* ------------------------------------------------- the parent's questions */
 
+  const len = quizLength(draft)
   const questions = draft.questions
   const started = questions.filter(isStartedQuestion)
   const ready = started.filter(isCompleteQuestion)
   const unfinished = started.length - ready.length
   const onlyMine = ready.length > 0 && draft.questionsOnly === true
-  const fromClaude = onlyMine ? 0 : Math.max(0, QUIZ_QUESTIONS - ready.length)
+  // Shrinking the quiz after writing more than it now holds doesn't delete
+  // the extras — only the first `len` are actually asked, same as if the
+  // parent had just stopped writing there.
+  const askedOwn = Math.min(ready.length, len)
+  const fromClaude = onlyMine ? 0 : Math.max(0, len - askedOwn)
 
   const editQuestion = (id, patch) =>
     setDraft((d) => ({
@@ -221,7 +226,7 @@ export default function ActivityEditor({ activity, kid, isNew, onSave, onDelete,
               </div>
               <div className="s">
                 When {kid?.name || 'they'} finish this, they say what they did and answer{' '}
-                {QUIZ_QUESTIONS} questions about it. The score comes to you. It is not done until
+                {len} questions about it. The score comes to you. It is not done until
                 they answer.
               </div>
             </div>
@@ -233,6 +238,24 @@ export default function ActivityEditor({ activity, kid, isNew, onSave, onDelete,
               onClick={() => set({ quiz: !draft.quiz })}
             />
           </div>
+
+          {draft.quiz && (
+            <div className="field" style={{ marginTop: 4 }}>
+              <span className="label">How many questions?</span>
+              <div className="chip-row">
+                {QUIZ_LENGTHS.map((n) => (
+                  <button
+                    key={n}
+                    className="chip-btn"
+                    aria-pressed={len === n}
+                    onClick={() => set({ quizLength: n })}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Nothing is written from this once the parent has written the whole
               quiz themselves, so it stops claiming to be read. The text stays
@@ -267,7 +290,7 @@ export default function ActivityEditor({ activity, kid, isNew, onSave, onDelete,
                 {ready.length === 0
                   ? 'Optional. Anything you write here is asked first, word for word, exactly as you wrote it.'
                   : onlyMine
-                    ? `Only your ${ready.length} question${ready.length === 1 ? '' : 's'} get asked. Nothing is written for you.`
+                    ? `Only your ${askedOwn} question${askedOwn === 1 ? '' : 's'} get asked. Nothing is written for you.`
                     : `Yours are asked first. The other ${fromClaude} are written from what ${kid?.name || 'your kid'} types.`}
               </p>
 
@@ -341,29 +364,29 @@ export default function ActivityEditor({ activity, kid, isNew, onSave, onDelete,
                 </p>
               )}
 
-              {questions.length < QUIZ_QUESTIONS && (
+              {questions.length < len && (
                 <button className="btn btn-sm quiz-own-add" onClick={addQuestion}>
                   <Plus size={14} /> {questions.length ? 'Add another' : 'Write a question'}
                 </button>
               )}
-              {ready.length === QUIZ_QUESTIONS && (
+              {askedOwn === len && (
                 <p className="hint">
-                  That is the whole quiz, {QUIZ_QUESTIONS} questions, all yours and ready.
+                  That is the whole quiz, {len} questions, all yours and ready.
                 </p>
               )}
             </div>
           )}
 
           {/* Only worth asking once they have written something, and only
-              while there is still room for Claude to fill in. Write all ten
-              and this decides itself. */}
-          {draft.quiz && ready.length > 0 && ready.length < QUIZ_QUESTIONS && (
+              while there is still room for Claude to fill in. Write the whole
+              quiz and this decides itself. */}
+          {draft.quiz && ready.length > 0 && askedOwn < len && (
             <div className="switch">
               <div className="switch-copy">
                 <div className="t">Ask only my questions</div>
                 <div className="s">
                   {onlyMine
-                    ? `A quiz of ${ready.length}, the same every time.`
+                    ? `A quiz of ${askedOwn}, the same every time.`
                     : `Otherwise yours come first and ${fromClaude} more are written to go with them.`}
                 </div>
               </div>

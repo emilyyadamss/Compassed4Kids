@@ -113,10 +113,12 @@ export function buildSample() {
           score,
           total: 10,
           at: c.completedAt,
-          missed: Array.from({ length: 10 - score }, (_, i) => ({
-            question: `Question ${i + 1} she got wrong.`,
-            chose: 'What she picked',
+          questions: Array.from({ length: 10 }, (_, i) => ({
+            question: `Question ${i + 1} about tonight's reading.`,
+            correct: i < score,
+            chose: i < score ? 'What she picked' : 'What she picked instead',
             answer: 'What the book actually said',
+            because: i < score ? '' : 'Because that is what happened in the chapter.',
           })),
         }
       }

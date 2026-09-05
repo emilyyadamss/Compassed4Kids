@@ -7,7 +7,7 @@
    comes down the wire. */
 
 import { supabase } from './supabaseClient.js'
-import { ownQuestions } from './model.js'
+import { ownQuestions, quizLength } from './model.js'
 
 async function post(body) {
   const { data } = await supabase.auth.getSession()
@@ -34,9 +34,10 @@ async function post(body) {
   return payload
 }
 
-/** Ten questions about what this kid says they just did, plus a sealed answer
-    key to hand back to `gradeQuiz`. `enough` is false when the note was too
-    thin to write real questions from.
+/** Five or ten questions, whichever this activity is set to, about what this
+    kid says they just did, plus a sealed answer key to hand back to
+    `gradeQuiz`. `enough` is false when the note was too thin to write real
+    questions from.
 
     Any questions the parent wrote themselves go up with the request. The
     server decides what to do with them — asks them first, and works out how
@@ -53,6 +54,7 @@ export function generateQuiz({ kid, activity, amount, note }) {
     note,
     kidName: kid?.name || '',
     grade: kid?.grade || '',
+    total: quizLength(activity),
     questions: ownQuestions(activity).map((q) => ({
       question: q.question,
       options: q.options,

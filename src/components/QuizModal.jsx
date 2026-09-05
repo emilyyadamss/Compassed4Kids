@@ -90,20 +90,22 @@ export default function QuizModal({ kid, activity, amount, note, onFinish, onEdi
       })
   }
 
-  /* What gets written onto the completion row. Small on purpose: a score, and
-     the questions they missed so a parent knows what to sit down about. The
-     ones they got right are not news. */
+  /* What gets written onto the completion row: the whole quiz, right answers
+     included, so a parent can see the entire test rather than take our word
+     for the score. */
   const keep = () => {
-    const missed = result.results
-      .map((r, i) => ({ r, q: quiz.questions[i] }))
-      .filter(({ r }) => !r.correct)
-      .map(({ r, q }) => ({
+    const questions = result.results.map((r, i) => {
+      const q = quiz.questions[i]
+      return {
         question: q.question,
+        correct: r.correct,
         chose: r.chose == null ? '' : q.options[r.chose],
         answer: q.options[r.answer],
-      }))
+        because: r.because || '',
+      }
+    })
 
-    onFinish({ score: result.score, total: result.total, at: new Date().toISOString(), missed })
+    onFinish({ score: result.score, total: result.total, at: new Date().toISOString(), questions })
   }
 
   const skip = (reason) => onFinish({ skipped: reason, at: new Date().toISOString() })
